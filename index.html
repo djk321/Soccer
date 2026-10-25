@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soccer Hub</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+  <meta property="og:title" content="Soccer Hub">
+  <meta property="og:description" content="Tools and resources for soccer players, parents, and fans — decision trainer, drills, rules, fair play, and more.">
+  <meta property="og:url" content="https://djk321.github.io/Soccer">
+  <meta property="og:type" content="website">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f0f14;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 20px 40px;
+    }
+    nav {
+      position: fixed;
+      top: 0; width: 100%;
+      background: #1a1a24;
+      padding: 16px 40px;
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      border-bottom: 1px solid #2a2a3a;
+      flex-wrap: wrap;
+      z-index: 100;
+    }
+    nav a {
+      color: #c9a84c;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
+    }
+    nav a:hover { color: #fff; }
+    nav a.active { color: #fff; border-bottom: 2px solid #7dd3fc; padding-bottom: 2px; }
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: #c9a84c;
+      font-size: 1.5rem;
+      cursor: pointer;
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .nav-links { display: flex; gap: 32px; flex-wrap: wrap; justify-content: center; }
+    @media (max-width: 640px) {
+      nav { flex-direction: column; align-items: flex-start; padding: 14px 20px; gap: 0; position: relative; }
+      .nav-toggle { display: block; }
+      .nav-links { display: none; flex-direction: column; gap: 14px; padding: 14px 0 6px; width: 100%; }
+      .nav-links.open { display: flex; }
+    }
+    header { text-align: center; margin-bottom: 48px; }
+    header h1 {
+      font-size: 42px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #e8d5a3, #c9a84c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    header p { margin-top: 10px; font-size: 14px; color: #666; letter-spacing: 2px; text-transform: uppercase; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      width: 100%;
+      max-width: 960px;
+    }
+    @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+    .card {
+      background: #1a1a24;
+      border: 1px solid #2a2a3a;
+      border-radius: 20px;
+      padding: 36px 32px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: #c9a84c;
+      box-shadow: 0 12px 40px rgba(201,168,76,0.15);
+    }
+    .card.featured {
+      background: linear-gradient(135deg, rgba(201,168,76,0.13), rgba(201,168,76,0.03));
+      border-color: rgba(201,168,76,0.4);
+    }
+    .card-icon { font-size: 44px; line-height: 1; }
+
+    /* Ask the Coach — striped-pitch poster card (swap in a Soccer-Coach.png later if you like) */
+    .card.coach {
+      position: relative; padding: 0; overflow: hidden; min-height: 380px;
+      background: repeating-linear-gradient(180deg, #2f6b2a 0 38px, #2a6125 38px 76px);
+    }
+    .card.coach .pitch-art {
+      position: absolute; inset: 0; display: flex; align-items: flex-start; justify-content: center;
+      padding-top: 46px; transition: transform 0.25s ease;
+    }
+    .card.coach:hover .pitch-art { transform: scale(1.05); }
+    .card.coach .pitch-art::before {
+      content: ''; position: absolute; left: 50%; top: 96px; width: 150px; height: 150px;
+      margin-left: -75px; border: 3px solid rgba(255,255,255,0.55); border-radius: 50%;
+    }
+    .card.coach .pitch-art::after {
+      content: ''; position: absolute; left: 0; right: 0; top: 171px; height: 3px; background: rgba(255,255,255,0.55);
+    }
+    .card.coach .art-emoji { position: relative; z-index: 1; font-size: 64px; margin-top: 52px; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.45)); }
+    .card.coach .coach-overlay {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      padding: 46px 20px 20px;
+      background: linear-gradient(to top, rgba(10,10,16,0.97) 32%, rgba(10,10,16,0.72) 66%, rgba(10,10,16,0) 100%);
+      display: flex; flex-direction: column; gap: 7px;
+    }
+    .card.coach .card-title { color: #e8d5a3; }
+    .card.coach .card-desc { color: #d4d7df; font-size: 13px; line-height: 1.5; }
+    .card-title { font-size: 22px; font-weight: 600; }
+    .card.featured .card-title { color: #e8d5a3; }
+    .card-desc { font-size: 14px; color: #888; line-height: 1.6; }
+    .card.featured .card-desc { color: #9a9aa5; }
+    .card.featured .card-tag { background: rgba(201,168,76,0.22); border-color: rgba(201,168,76,0.5); color: #e8d5a3; }
+    .card-tag {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: rgba(201, 168, 76, 0.12);
+      color: #c9a84c;
+      border: 1px solid rgba(201, 168, 76, 0.25);
+      align-self: flex-start;
+    }
+    footer { margin-top: 56px; font-size: 12px; color: #888; letter-spacing: 1px; }
+  </style>
+</head>
+<body>
+  <nav>
+    <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+    <div class="nav-links">
+      <a href="index.html" class="active">Home</a>
+      <a href="about.html">About</a>
+      <a href="soccer/why-soccer.html">Why Soccer</a>
+      <a href="soccer/rules.html">Rules</a>
+      <a href="soccer/trainer.html">Training</a>
+      <a href="soccer/drills.html">Drills</a>
+      <a href="soccer/fair-play.html">Fair Play</a>
+      <a href="soccer/helpful-terms.html">Helpful Terms</a>
+      <a href="soccer/coach.html">Ask the Coach</a>
+    </div>
+  </nav>
+
+  <header>
+    <h1>⚽ Soccer</h1>
+    <p>Tools &amp; resources for players, parents &amp; fans</p>
+  </header>
+
+  <div class="grid">
+    <a class="card featured" href="soccer/why-soccer.html">
+      <div class="card-icon">⚽</div>
+      <div class="card-title">Why Soccer?</div>
+      <div class="card-desc">The world's game — simple to learn, endless to master. Here's why it's loved everywhere and how to get started.</div>
+      <span class="card-tag">Start Here</span>
+    </a>
+
+    <a class="card" href="soccer/rules.html">
+      <div class="card-icon">⚖️</div>
+      <div class="card-title">Rules</div>
+      <div class="card-desc">Offside, fouls and cards, handball, free kicks, penalties, throw-ins — the Laws of the Game in plain English.</div>
+      <span class="card-tag">Reference</span>
+    </a>
+
+    <a class="card" href="soccer/trainer.html">
+      <div class="card-icon">🎯</div>
+      <div class="card-title">Decision Trainer</div>
+      <div class="card-desc">Read the pitch, pick the best play — pass, shoot, dribble, or defend — and watch the ball go.</div>
+      <span class="card-tag">Interactive</span>
+    </a>
+
+    <a class="card" href="soccer/drills.html">
+      <div class="card-icon">📋</div>
+      <div class="card-title">Drills</div>
+      <div class="card-desc">10 drills for passing, dribbling, shooting, and defending — with animated pitch diagrams and full instructions.</div>
+      <span class="card-tag">Practice</span>
+    </a>
+
+    <a class="card" href="soccer/fair-play.html">
+      <div class="card-icon">🤝</div>
+      <div class="card-title">Fair Play</div>
+      <div class="card-desc">Respecting the ref, playing safe, sideline manners, and the unwritten rules that make every match better.</div>
+      <span class="card-tag">Guide</span>
+    </a>
+
+    <a class="card" href="soccer/helpful-terms.html">
+      <div class="card-icon">📖</div>
+      <div class="card-title">Helpful Terms</div>
+      <div class="card-desc">Nutmegs, one-twos, clean sheets, the far post — the vocabulary every player and fan needs to know.</div>
+      <span class="card-tag">Glossary</span>
+    </a>
+
+    <a class="card coach" href="soccer/coach.html">
+      <div class="pitch-art"><div class="art-emoji">⚽</div></div>
+      <div class="coach-overlay">
+        <div class="card-title">Ask the Coach</div>
+        <div class="card-desc">Instant answers on offside, fouls, positions, and skills.</div>
+        <span class="card-tag">Chatbot</span>
+      </div>
+    </a>
+  </div>
+
+  <footer>© 2026 Dan Keller &mdash; Soccer Hub</footer>
+  <script>
+    document.querySelector('.nav-toggle').addEventListener('click', () => {
+      document.querySelector('.nav-links').classList.toggle('open');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fair Play — Soccer Hub</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f0f14;
+      color: #fff;
+      min-height: 100vh;
+      padding: 100px 20px 60px;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: #1a1a24;
+      padding: 16px 40px;
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      border-bottom: 1px solid #2a2a3a;
+      flex-wrap: wrap;
+      z-index: 100;
+    }
+
+    nav a {
+      color: #c9a84c;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
+    }
+
+    nav a:hover { color: #ffffff; }
+    nav a.active { color: #ffffff; border-bottom: 2px solid #7dd3fc; padding-bottom: 2px; }
+    .nav-toggle { display: none; background: none; border: none; color: #c9a84c; font-size: 1.5rem; cursor: pointer; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); }
+    .nav-links { display: flex; gap: 32px; flex-wrap: wrap; justify-content: center; }
+    @media (max-width: 640px) {
+      nav { flex-direction: column; align-items: flex-start; padding: 14px 20px; gap: 0; position: relative; }
+      .nav-toggle { display: block; }
+      .nav-links { display: none; flex-direction: column; gap: 14px; padding: 14px 0 6px; width: 100%; }
+      .nav-links.open { display: flex; }
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    header h1 {
+      font-size: 38px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #e8d5a3, #c9a84c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header p {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #666;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .content {
+      max-width: 780px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #555;
+      padding: 20px 4px 4px;
+    }
+
+    .section-label:first-child { padding-top: 0; }
+
+    .rule-card {
+      background: #1a1a24;
+      border: 1px solid #2a2a3a;
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .rule-card:hover {
+      border-color: #c9a84c55;
+      box-shadow: 0 4px 20px rgba(201, 168, 76, 0.08);
+    }
+
+    .rule-card.open {
+      border-color: #c9a84c;
+      box-shadow: 0 8px 32px rgba(201, 168, 76, 0.12);
+    }
+
+    .rule-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 24px;
+      user-select: none;
+    }
+
+    .rule-icon { font-size: 28px; line-height: 1; flex-shrink: 0; }
+
+    .rule-title {
+      flex: 1;
+      font-size: 17px;
+      font-weight: 600;
+      color: #e8d5a3;
+    }
+
+    .rule-chevron {
+      font-size: 14px;
+      color: #555;
+      transition: transform 0.22s ease, color 0.18s;
+      flex-shrink: 0;
+    }
+
+    .rule-card.open .rule-chevron {
+      transform: rotate(180deg);
+      color: #c9a84c;
+    }
+
+    .rule-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .rule-card.open .rule-body {
+      max-height: 500px;
+    }
+
+    .rule-body-inner {
+      padding: 0 24px 22px 68px;
+      font-size: 15px;
+      color: #999;
+      line-height: 1.75;
+    }
+
+    .rule-body-inner strong { color: #c9a84c; }
+
+    .rule-body-inner ul {
+      margin-top: 10px;
+      padding-left: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    footer { margin-top: 60px; text-align: center; font-size: 12px; color: #888; letter-spacing: 1px; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+    <div class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../about.html">About</a>
+      <a href="why-soccer.html">Why Soccer</a>
+      <a href="rules.html">Rules</a>
+      <a href="trainer.html">Training</a>
+      <a href="drills.html">Drills</a>
+      <a href="fair-play.html" class="active">Fair Play</a>
+      <a href="helpful-terms.html">Helpful Terms</a>
+      <a href="coach.html">Ask the Coach</a>
+    </div>
+  </nav>
+
+  <header>
+    <h1>🤝 Fair Play</h1>
+    <p>Play hard, play fair, play safe</p>
+  </header>
+
+  <div class="content">
+
+    <!-- THE REFEREE -->
+    <div class="section-label">The Referee</div>
+
+    <div class="rule-card">
+      <div class="rule-header">
+        <div class="rule-icon">🟨</div>
+        <div class="rule-title">Respect the Ref — Even When They're Wrong</div>
+        <div class="rule-chevron">▼</div>
+      </div>
+      <div class="rule-body">
+        <div class="rule-body-inner">
+          Referees miss things; so do players. <strong>Arguing a call almost never changes it</strong> — and in organized play, dissent earns a yellow card. In youth and rec leagues the ref is often a teenager or a volunteer. If you have a genuine question, let your <strong>captain ask calmly</strong> at a stoppage. Then move on to the next play.
+        </div>
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-header">
+        <div class="rule-icon">🙋</div>
+        <div class="rule-title">No Ref? Call Your Own Fouls</div>
+        <div class="rule-chevron">▼</div>
+      </div>
+      <div class="rule-body">
+        <div class="rule-body-inner">
+          In pickup games, players referee themselves. <strong>If you foul someone, say so</strong> and give them the free kick. Common examples:
+          <ul>
+            <li>Clipping someone's heels from behind</li>
+            <li>The ball hitting your hand or arm</li>
+            <li>Knowing the ball went off you before it went out</li>
+          </ul>
+          Owning up builds trust. <strong>Never try to win by sneaking past the rules.</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAFETY -->
+    <div class="section-label">Safety</div>
+
+    <div class="rule-card">
+      <div class="rule-header">
+        <div class="rule-icon">🦵</div>
+        <div class="rule-title">Play the Ball, Not the Player</div>
+        <div class="rule-chevron">▼</div>
+      </div>
+      <div class="rule-body">
+        <div class="rule-body-inner">
+          Tackle to win the ball, never to hurt. <strong>No studs-up challenges, no tackles from behind,</strong> and keep your elbows down in the air. In casual and older-adult games, <strong>skip slide tackles entirely</strong> — most rec and walking-soccer leagues ban them anyway. Nobody wants to miss work (or a grandchild's birthday) because of a pickup game.
+        </div>
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-header">
+        <div class="rule-icon">🩹</div>
+        <div class="rule-title">Kick It Out for an Injury — and Give It Back</div>
+        <div class="rule-chevron">▼</div>
+      </div>
+      <div class="rule-body">
+        <div class="rule-body-inner">
+          If a player is down and hurt, the team with the ball <strong>kicks it out of play</strong> so they can be helped. When play restarts, the other team <strong>gives possession back</strong> — usually by throwing or kicking it to the team that put it out. It's one of soccer's oldest unwritten rules, and everyone notices who honors it.
+        </div>
+      </div>
+    </div>
+
+    <!-- TEAMMATES -->
+    <div class="section-label">Teammates</div>
+
+    <div class="rule-card">
+      <div class="rule-header">
+        <div class="rule-icon">🏅</div>
+        <div class="rule-title">Never Get Mad at a Teammate</div>
+        <div class="rule-chevron">▼</div>
+      </div>
+      <div class="rule-body">
+        <div class="rule-body-inner">
+          When a teammate misplaces a pass or lets in a goal, <strong>they already feel bad</strong>. Don't throw up your arms or yell. The best things you can say: <em>"Unlucky,"</em> <em>"Next one,"</em> <em>"Keep going."</em> A clap and a thumbs-up does more than any lecture. Confident teammates make better decisions.
+        </div>
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-header">
+        <div class="rule-icon">🔁</div>
+        <div class="rule-title">Pass the Ball — Share the Game</div>
+        <div class="rule-chevron">▼</div>
+      </div>
+      <div class="rule-body">
+        <div class="rule-body-inner">
+          Dribbling is fun, but <strong>nobody enjoys playing with a ball hog</strong>. Look for the open teammate, especially the ones who haven't touched it in a while. In pickup, <strong>take your turn in goal</strong> and on defense — rotating keepers is standard etiquette.
+        </div>
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-header">
+        <div class="rule-icon">📣</div>
+        <div class="rule-title">Talk — Helpfully</div>
+        <div class="rule-chevron">▼</div>
+      </div>
+      <div class="rule-body">
+        <div class="rule-body-inner">
+          Good communication wins games: <strong>"Man on!"</strong> (someone's behind you), <strong>"Time!"</strong> (you have space), <strong>"Keeper's!"</strong> and <strong>"Away!"</strong> (clear it). Keep it to short, useful information — <strong>not a running critique</strong> of how your teammates are playing. Save the coaching for after the game, and only if they ask.
+        </div>
+      </div>
+    </div>
+
+    <!-- SPORTSMANSHIP -->
+    <div class="section-label">Sportsmanship</div>
+
+    <div class="rule-card">
+      <div class="rule-header">
+        <div class="rule-icon">🎭</div>
+        <div class="rule-title">Don't Dive, Don't Waste Time</div>
+        <div class="rule-chevron">▼</div>
+      </div>
+      <div class="rule-body">
+        <div class="rule-body-inner">
+          <strong>Diving</strong> (faking a foul) and rolling around to fool the ref is a yellow card in the Laws of the Game — and a reputation-killer in a pickup game. Same goes for <strong>stalling</strong>: slow-walking to take throw-ins or kicking the ball away after a whistle. Win by playing better.
+        </div>
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-header">
+        <div class="rule-icon">😤</div>
+        <div class="rule-title">Don't Be a Sore Winner or a Sore Loser</div>
+        <div class="rule-chevron">▼</div>
+      </div>
+      <div class="rule-body">
+        <div class="rule-body-inner">
+          <strong>Sore winner:</strong> taunting, over-the-top celebrations in a lopsided game, running up the score against kids or beginners. Celebrate with your team, not at the other one.<br><br>
+          <strong>Sore loser:</strong> blaming the ref, the field, or your teammates. <strong>Shake every hand after the match</strong> — opponents and referee — and tell them "good game." Mean it.
+        </div>
+      </div>
+    </div>
+
+    <!-- THE SIDELINE -->
+    <div class="section-label">On the Sideline</div>
+
+    <div class="rule-card">
+      <div class="rule-header">
+        <div class="rule-icon">👨‍👩‍👧</div>
+        <div class="rule-title">Cheer Effort, Let the Coach Coach</div>
+        <div class="rule-chevron">▼</div>
+      </div>
+      <div class="rule-body">
+        <div class="rule-body-inner">
+          Parents and grandparents are a team's best fans. <strong>Cheer for good effort and good plays by both teams</strong>, not just goals. Don't shout instructions ("Shoot!" "Pass!") — kids can't listen to the coach and the sideline at the same time, and conflicting advice freezes them. <strong>Never yell at the referee</strong>; youth leagues lose refs every year because of sideline abuse.
+        </div>
+      </div>
+    </div>
+
+    <div class="rule-card">
+      <div class="rule-header">
+        <div class="rule-icon">🚗</div>
+        <div class="rule-title">The Ride Home Matters</div>
+        <div class="rule-chevron">▼</div>
+      </div>
+      <div class="rule-body">
+        <div class="rule-body-inner">
+          Skip the post-game analysis in the car. The best thing to say to a young player after a game, win or lose: <strong>"I love watching you play."</strong> Let them bring up the game if they want to talk about it.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>Soccer &mdash; Fair Play<br><span style="color:#aaa;font-size:12px;letter-spacing:1px;">Content generated with AI assistance &mdash; check your league's own rules and code of conduct.</span></footer>
+
+  <script>
+    document.querySelectorAll('.rule-card').forEach(card => {
+      card.querySelector('.rule-header').addEventListener('click', () => {
+        card.classList.toggle('open');
+      });
+    });
+  </script>
+  <script>
+    document.querySelector('.nav-toggle').addEventListener('click', () => {
+      document.querySelector('.nav-links').classList.toggle('open');
+    });
+  </script>
+
+</body>
+</html>

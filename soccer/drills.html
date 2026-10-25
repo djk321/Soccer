@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drills — Soccer Hub</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #eee; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 76px 16px 40px; }
+
+  nav { position: fixed; top: 0; width: 100%; background: #1a1a24; padding: 16px 40px; display: flex; gap: 28px; justify-content: center; border-bottom: 1px solid #2a2a3a; z-index: 100; flex-wrap: wrap; }
+  nav a { color: #c9a84c; text-decoration: none; font-size: 0.92rem; font-weight: 600; letter-spacing: 0.05em; transition: color 0.2s; }
+  nav a:hover { color: #ffffff; }
+  nav a.active { color: #ffffff; border-bottom: 2px solid #7dd3fc; padding-bottom: 2px; }
+  .nav-toggle { display: none; background: none; border: none; color: #c9a84c; font-size: 1.5rem; cursor: pointer; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); }
+  .nav-links { display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; }
+  @media (max-width: 640px) {
+    nav { flex-direction: column; align-items: flex-start; padding: 14px 20px; gap: 0; position: relative; }
+    .nav-toggle { display: block; }
+    .nav-links { display: none; flex-direction: column; gap: 14px; padding: 14px 0 6px; width: 100%; }
+    .nav-links.open { display: flex; }
+  }
+
+  header { text-align: center; margin: 24px 0 8px; }
+  h1 { font-size: 1.6rem; color: #7dd3fc; letter-spacing: 3px; text-transform: uppercase; }
+  .subtitle { font-size: 0.78rem; color: #64748b; margin-top: 4px; }
+
+  .filter-row { display: flex; gap: 8px; margin: 18px 0 22px; flex-wrap: wrap; justify-content: center; }
+  .filter-btn { padding: 5px 14px; border-radius: 20px; border: 1.5px solid #334155; background: transparent; color: #94a3b8; font-size: 0.77rem; cursor: pointer; transition: all 0.15s; }
+  .filter-btn:hover { border-color: #7dd3fc; color: #7dd3fc; }
+  .filter-btn.active    { background: #1e3a5f; border-color: #7dd3fc; color: #7dd3fc; }
+  .filter-btn.active-partner { background: #1e1b4b; border-color: #a78bfa; color: #c4b5fd; }
+  .filter-btn.active-group   { background: #422006; border-color: #f59e0b; color: #fcd34d; }
+  .filter-btn.active-solo    { background: #042f1e; border-color: #10b981; color: #6ee7b7; }
+
+  .drills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; width: 100%; max-width: 1100px; }
+
+  .drill-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; transition: border-color 0.2s; }
+  .drill-card:hover { border-color: #7dd3fc; }
+  .drill-card.hidden { display: none; }
+  .drill-card.expanded { grid-column: 1 / -1; border-color: #7dd3fc; cursor: default; }
+
+  .drill-header { display: flex; align-items: flex-start; gap: 12px; }
+  .drill-num { font-size: 1.4rem; font-weight: 800; color: #334155; line-height: 1; min-width: 32px; }
+  .drill-card.expanded .drill-num { color: #7dd3fc; }
+  .drill-title { font-size: 1rem; font-weight: 700; color: #e2e8f0; line-height: 1.3; }
+
+  .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag { font-size: 0.68rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+  .tag-solo     { background:#042f1e; color:#6ee7b7; border:1px solid #065f46; }
+  .tag-partner  { background:#1e1b4b; color:#c4b5fd; border:1px solid #4338ca; }
+  .tag-group    { background:#422006; color:#fcd34d; border:1px solid #92400e; }
+  .tag-passing  { background:#0c1a2e; color:#7dd3fc; border:1px solid #1e3a5f; }
+  .tag-dribbling { background:#1a0a2e; color:#d8b4fe; border:1px solid #4c1d95; }
+  .tag-shooting { background:#1a1a0a; color:#fde68a; border:1px solid #78350f; }
+  .tag-touch    { background:#0a1a1a; color:#67e8f9; border:1px solid #155e75; }
+  .tag-defending { background:#1a0a0a; color:#fca5a5; border:1px solid #7f1d1d; }
+
+  .drill-summary { font-size: 0.84rem; color: #94a3b8; line-height: 1.6; }
+  .expand-hint { font-size: 0.68rem; color: #475569; text-align: right; }
+  .drill-card.expanded .expand-hint { display: none; }
+
+  /* Expanded layout */
+  .drill-expanded { display: none; border-top: 1px solid #334155; padding-top: 14px; }
+  .drill-card.expanded .drill-expanded { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
+
+  .court-panel { flex: 0 0 auto; display: flex; flex-direction: column; gap: 8px; }
+  canvas.drill-canvas { border-radius: 8px; display: block; background: #1e293b; }
+  .court-legend { display: flex; gap: 12px; flex-wrap: wrap; }
+  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 0.7rem; color: #94a3b8; }
+  .leg-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+  .drill-detail { flex: 1; min-width: 220px; display: flex; flex-direction: column; gap: 12px; }
+  .detail-section { }
+  .detail-label { font-size: 0.64rem; color: #7dd3fc; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .detail-text { font-size: 0.82rem; color: #cbd5e1; line-height: 1.65; }
+  .detail-text li { margin-left: 16px; margin-bottom: 3px; }
+  .detail-text ol { margin-left: 4px; }
+  .detail-text ol li { margin-left: 12px; }
+
+  .players-badge { font-size: 0.73rem; color: #64748b; display: flex; align-items: center; gap: 4px; }
+
+  .collapse-btn { align-self: flex-start; margin-top: 4px; background: transparent; border: 1.5px solid #334155; border-radius: 6px; color: #64748b; font-size: 0.75rem; padding: 4px 10px; cursor: pointer; transition: all 0.15s; }
+  .collapse-btn:hover { border-color: #7dd3fc; color: #7dd3fc; }
+
+  @media (max-width: 600px) {
+    .drill-card.expanded .drill-expanded { flex-direction: column; }
+    canvas.drill-canvas { width: 100% !important; height: auto !important; }
+  }
+  .filter-btn.active-passing   { background: #0c1a2e; border-color: #7dd3fc; color: #7dd3fc; }
+  .filter-btn.active-dribbling { background: #1a0a2e; border-color: #a855f7; color: #d8b4fe; }
+  .filter-btn.active-shooting  { background: #1a1a0a; border-color: #f59e0b; color: #fde68a; }
+  .filter-btn.active-defending { background: #1a0a0a; border-color: #ef4444; color: #fca5a5; }
+</style>
+</head>
+<body>
+
+<nav>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+  <div class="nav-links">
+    <a href="../index.html">Home</a>
+    <a href="../about.html">About</a>
+    <a href="why-soccer.html">Why Soccer</a>
+    <a href="rules.html">Rules</a>
+    <a href="trainer.html">Training</a>
+    <a href="drills.html" class="active">Drills</a>
+    <a href="fair-play.html">Fair Play</a>
+    <a href="helpful-terms.html">Helpful Terms</a>
+    <a href="coach.html">Ask the Coach</a>
+  </div>
+</nav>
+
+<header>
+  <h1>Soccer Drills</h1>
+  <div class="subtitle">Click a drill to see the pitch animation and full instructions</div>
+</header>
+
+<div class="filter-row">
+  <button class="filter-btn active" data-filter="all">All Drills</button>
+  <button class="filter-btn" data-filter="solo">Solo</button>
+  <button class="filter-btn" data-filter="partner">With Partner</button>
+  <button class="filter-btn" data-filter="group">Group (3+)</button>
+  <button class="filter-btn" data-filter="passing">Passing</button>
+  <button class="filter-btn" data-filter="dribbling">Dribbling</button>
+  <button class="filter-btn" data-filter="shooting">Shooting</button>
+  <button class="filter-btn" data-filter="defending">Defending</button>
+</div>
+
+<div class="drills-grid" id="drillsGrid">
+
+<!-- ── DRILL 1 ─────────────────────────────────────────────────── -->
+<div class="drill-card" data-drill="1" data-tags="group passing">
+  <div class="drill-header">
+    <div class="drill-num">01</div>
+    <div>
+      <div class="drill-title">Rondo (4 v 1 Keep-Away)</div>
+      <div class="players-badge">👥 5 players · 10×10 yard square</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-group">Group</span>
+    <span class="tag tag-passing">Passing</span>
+  </div>
+  <div class="drill-summary">Four players keep the ball away from one defender in the middle. The best warm-up in soccer — quick passing, angles, and first touch.</div>
+  <div class="drill-expanded">
+    <div class="court-panel">
+      <canvas class="drill-canvas" data-drill="1" width="460" height="252"></canvas>
+      <div class="court-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div>You</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#f97316"></div>Teammates</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#dc2626"></div>Defender</div>
+      </div>
+    </div>
+    <div class="drill-detail">
+      <div class="detail-section">
+        <div class="detail-label">Setup</div>
+        <div class="detail-text">Mark a 10×10 yard square with four cones. One attacker on each side, one defender in the middle, one ball.</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">How to Run</div>
+        <div class="detail-text"><ol>
+          <li>Attackers pass around the square, moving along their side to stay open.</li>
+          <li>The defender tries to touch or intercept the ball.</li>
+          <li>Whoever loses the ball (or kicks it out) swaps into the middle.</li>
+          <li>Bonus point for a "split pass" through the middle past the defender.</li>
+        </ol></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Focus Points</div>
+        <div class="detail-text"><ul>
+          <li>Open your body so you can see the next pass before the ball arrives.</li>
+          <li>Two touches max — one to control, one to pass.</li>
+          <li>Move to make a passing angle; don't hide behind the defender.</li>
+        </ul></div>
+      </div>
+      <button class="collapse-btn">▲ Collapse</button>
+    </div>
+  </div>
+  <div class="expand-hint">tap to expand ▾</div>
+</div>
+
+<!-- ── DRILL 2 ─────────────────────────────────────────────────── -->
+<div class="drill-card" data-drill="2" data-tags="partner passing shooting">
+  <div class="drill-header">
+    <div class="drill-num">02</div>
+    <div>
+      <div class="drill-title">Give-and-Go to Goal</div>
+      <div class="players-badge">👥 2 players · Top of the box</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-partner">Partner</span>
+    <span class="tag tag-passing">Passing</span>
+    <span class="tag tag-shooting">Shooting</span>
+  </div>
+  <div class="drill-summary">Pass to a partner, sprint past a cone "defender," get the ball right back in stride, and finish.</div>
+  <div class="drill-expanded">
+    <div class="court-panel">
+      <canvas class="drill-canvas" data-drill="2" width="460" height="252"></canvas>
+      <div class="court-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div>You</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#f97316"></div>Partner</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#fb923c;border-radius:2px"></div>Cone</div>
+      </div>
+    </div>
+    <div class="drill-detail">
+      <div class="detail-section">
+        <div class="detail-label">Setup</div>
+        <div class="detail-text">You start about 30 yards from goal with a ball. A cone stands in for a defender; your partner waits off to the side as the "wall."</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">How to Run</div>
+        <div class="detail-text"><ol>
+          <li>Dribble toward the cone.</li>
+          <li>Just before it, pass firmly to your partner (the "give").</li>
+          <li>Sprint past the cone on the other side (the "go").</li>
+          <li>Partner returns the ball one-touch into your path; you shoot. Switch roles after 5.</li>
+        </ol></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Focus Points</div>
+        <div class="detail-text"><ul>
+          <li>Accelerate the instant you release the pass.</li>
+          <li>Partner: play the return into space ahead of the runner, not to their feet.</li>
+          <li>Shoot early — low and to the corner.</li>
+        </ul></div>
+      </div>
+      <button class="collapse-btn">▲ Collapse</button>
+    </div>
+  </div>
+  <div class="expand-hint">tap to expand ▾</div>
+</div>
+
+<!-- ── DRILL 3 ─────────────────────────────────────────────────── -->
+<div class="drill-card" data-drill="3" data-tags="solo dribbling">
+  <div class="drill-header">
+    <div class="drill-num">03</div>
+    <div>
+      <div class="drill-title">Cone Slalom</div>
+      <div class="players-badge">🧍 1 player · 6 cones in a line</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-solo">Solo</span>
+    <span class="tag tag-dribbling">Dribbling</span>
+  </div>
+  <div class="drill-summary">Weave through a line of cones keeping the ball close — the classic way to build close control with both feet.</div>
+  <div class="drill-expanded">
+    <div class="court-panel">
+      <canvas class="drill-canvas" data-drill="3" width="460" height="252"></canvas>
+      <div class="court-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div>You</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#fb923c;border-radius:2px"></div>Cones</div>
+      </div>
+    </div>
+    <div class="drill-detail">
+      <div class="detail-section">
+        <div class="detail-label">Setup</div>
+        <div class="detail-text">Six cones in a straight line, about 1–2 yards apart (closer = harder).</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">How to Run</div>
+        <div class="detail-text"><ol>
+          <li>Dribble through the cones, weaving left and right.</li>
+          <li>At the end, turn and come back.</li>
+          <li>Round 1: right foot only. Round 2: left foot only. Round 3: inside and outside of both feet.</li>
+          <li>Time yourself once you're comfortable.</li>
+        </ol></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Focus Points</div>
+        <div class="detail-text"><ul>
+          <li>Many small touches — keep the ball within a step of you.</li>
+          <li>Eyes up between cones whenever you can.</li>
+          <li>Stay on the balls of your feet with knees bent.</li>
+        </ul></div>
+      </div>
+      <button class="collapse-btn">▲ Collapse</button>
+    </div>
+  </div>
+  <div class="expand-hint">tap to expand ▾</div>
+</div>
+
+<!-- ── DRILL 4 ─────────────────────────────────────────────────── -->
+<div class="drill-card" data-drill="4" data-tags="partner passing touch">
+  <div class="drill-header">
+    <div class="drill-num">04</div>
+    <div>
+      <div class="drill-title">Passing Gates</div>
+      <div class="players-badge">👥 2 players · Open area with cone gates</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-partner">Partner</span>
+    <span class="tag tag-passing">Passing</span>
+    <span class="tag tag-touch">First Touch</span>
+  </div>
+  <div class="drill-summary">Partners move around a field of small cone "gates," scoring a point for every pass through one.</div>
+  <div class="drill-expanded">
+    <div class="court-panel">
+      <canvas class="drill-canvas" data-drill="4" width="460" height="252"></canvas>
+      <div class="court-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div>You</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#f97316"></div>Partner</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#fb923c;border-radius:2px"></div>Gates</div>
+      </div>
+    </div>
+    <div class="drill-detail">
+      <div class="detail-section">
+        <div class="detail-label">Setup</div>
+        <div class="detail-text">Set up 4–6 "gates" (two cones about 2 yards apart) spread around a 30×30 yard area. One ball per pair.</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">How to Run</div>
+        <div class="detail-text"><ol>
+          <li>Pass through a gate to your partner on the other side.</li>
+          <li>Receiver takes a touch toward a <em>different</em> gate and dribbles there.</li>
+          <li>Partner runs to the far side of the new gate to receive.</li>
+          <li>Count gates in 60 seconds; can't use the same gate twice in a row.</li>
+        </ol></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Focus Points</div>
+        <div class="detail-text"><ul>
+          <li>Pass with the inside of the foot, ankle locked.</li>
+          <li>First touch out of your feet toward the next gate.</li>
+          <li>Talk — call which gate you're heading to.</li>
+        </ul></div>
+      </div>
+      <button class="collapse-btn">▲ Collapse</button>
+    </div>
+  </div>
+  <div class="expand-hint">tap to expand ▾</div>
+</div>
+
+<!-- ── DRILL 5 ─────────────────────────────────────────────────── -->
+<div class="drill-card" data-drill="5" data-tags="partner dribbling shooting defending">
+  <div class="drill-header">
+    <div class="drill-num">05</div>
+    <div>
+      <div class="drill-title">1 v 1 to Goal</div>
+      <div class="players-badge">👥 2–3 players · Edge of the box</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-partner">Partner</span>
+    <span class="tag tag-dribbling">Dribbling</span>
+    <span class="tag tag-shooting">Shooting</span>
+    <span class="tag tag-defending">Defending</span>
+  </div>
+  <div class="drill-summary">Attacker takes on a defender and tries to score. The most game-like duel there is — great for both players.</div>
+  <div class="drill-expanded">
+    <div class="court-panel">
+      <canvas class="drill-canvas" data-drill="5" width="460" height="252"></canvas>
+      <div class="court-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div>You (attacker)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#dc2626"></div>Defender</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#a855f7"></div>Keeper</div>
+      </div>
+    </div>
+    <div class="drill-detail">
+      <div class="detail-section">
+        <div class="detail-label">Setup</div>
+        <div class="detail-text">Attacker starts 30 yards out with the ball; defender 10 yards in front. Add a keeper if you have a third player.</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">How to Run</div>
+        <div class="detail-text"><ol>
+          <li>Attacker dribbles at the defender at speed.</li>
+          <li>Use a feint (body swerve, step-over, or drop of the shoulder) to unbalance them.</li>
+          <li>Cut away into space and shoot.</li>
+          <li>Defender scores a point for winning the ball or forcing it out. Swap every 5 reps.</li>
+        </ol></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Focus Points</div>
+        <div class="detail-text"><ul>
+          <li>Attack the defender's front foot — make them turn.</li>
+          <li>Change speed after the move; the burst is what beats them.</li>
+          <li>Defender: stay on your feet and show the attacker wide.</li>
+        </ul></div>
+      </div>
+      <button class="collapse-btn">▲ Collapse</button>
+    </div>
+  </div>
+  <div class="expand-hint">tap to expand ▾</div>
+</div>
+
+<!-- ── DRILL 6 ─────────────────────────────────────────────────── -->
+<div class="drill-card" data-drill="6" data-tags="partner shooting touch">
+  <div class="drill-header">
+    <div class="drill-num">06</div>
+    <div>
+      <div class="drill-title">Receive, Turn &amp; Shoot</div>
+      <div class="players-badge">👥 2 players · Top of the box</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-partner">Partner</span>
+    <span class="tag tag-shooting">Shooting</span>
+    <span class="tag tag-touch">First Touch</span>
+  </div>
+  <div class="drill-summary">Take a pass with your back to goal, turn on your first touch, and shoot before a defender can close you down.</div>
+  <div class="drill-expanded">
+    <div class="court-panel">
+      <canvas class="drill-canvas" data-drill="6" width="460" height="252"></canvas>
+      <div class="court-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div>You</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#f97316"></div>Feeder</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#a855f7"></div>Keeper</div>
+      </div>
+    </div>
+    <div class="drill-detail">
+      <div class="detail-section">
+        <div class="detail-label">Setup</div>
+        <div class="detail-text">You stand at the top of the box facing away from goal. Feeder is 15–20 yards in front of you with a supply of balls. A cone marks an imaginary defender.</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">How to Run</div>
+        <div class="detail-text"><ol>
+          <li>Check your shoulder to see where the cone (defender) is.</li>
+          <li>Feeder passes firmly to your feet.</li>
+          <li>Turn away from the cone with your first touch.</li>
+          <li>Shoot with your second touch. 10 reps, then swap.</li>
+        </ol></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Focus Points</div>
+        <div class="detail-text"><ul>
+          <li>Open your hips as the ball arrives so your touch takes you toward goal.</li>
+          <li>Use the outside of the foot to turn one way, inside to turn the other.</li>
+          <li>Shoot across the keeper toward the far post.</li>
+        </ul></div>
+      </div>
+      <button class="collapse-btn">▲ Collapse</button>
+    </div>
+  </div>
+  <div class="expand-hint">tap to expand ▾</div>
+</div>
+
+<!-- ── DRILL 7 ─────────────────────────────────────────────────── -->
+<div class="drill-card" data-drill="7" data-tags="group passing shooting">
+  <div class="drill-header">
+    <div class="drill-num">07</div>
+    <div>
+      <div class="drill-title">Crossing &amp; Finishing</div>
+      <div class="players-badge">👥 3–4 players · Wing and penalty box</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-group">Group</span>
+    <span class="tag tag-passing">Crossing</span>
+    <span class="tag tag-shooting">Finishing</span>
+  </div>
+  <div class="drill-summary">A winger dribbles down the line and crosses; two strikers time their runs to the near and far posts.</div>
+  <div class="drill-expanded">
+    <div class="court-panel">
+      <canvas class="drill-canvas" data-drill="7" width="460" height="252"></canvas>
+      <div class="court-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div>You (winger)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#f97316"></div>Strikers</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#a855f7"></div>Keeper</div>
+      </div>
+    </div>
+    <div class="drill-detail">
+      <div class="detail-section">
+        <div class="detail-label">Setup</div>
+        <div class="detail-text">Winger starts wide near midfield with a ball. Two strikers wait about 25 yards from goal. Keeper in goal if available.</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">How to Run</div>
+        <div class="detail-text"><ol>
+          <li>Winger dribbles hard down the sideline toward the goal line.</li>
+          <li>Strikers wait, then sprint — one to the near post, one to the far post.</li>
+          <li>Winger crosses into the space between the keeper and the strikers.</li>
+          <li>Strikers finish first-time. Rotate positions and switch wings.</li>
+        </ol></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Focus Points</div>
+        <div class="detail-text"><ul>
+          <li>Strikers: arrive late and fast rather than standing and waiting.</li>
+          <li>Winger: look up before crossing; aim for space, not a player.</li>
+          <li>Finish down into the ground — low headers and side-foot volleys.</li>
+        </ul></div>
+      </div>
+      <button class="collapse-btn">▲ Collapse</button>
+    </div>
+  </div>
+  <div class="expand-hint">tap to expand ▾</div>
+</div>
+
+<!-- ── DRILL 8 ─────────────────────────────────────────────────── -->
+<div class="drill-card" data-drill="8" data-tags="group passing dribbling shooting">
+  <div class="drill-header">
+    <div class="drill-num">08</div>
+    <div>
+      <div class="drill-title">2 v 1 Overload</div>
+      <div class="players-badge">👥 3–4 players · Half field</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-group">Group</span>
+    <span class="tag tag-passing">Passing</span>
+    <span class="tag tag-shooting">Shooting</span>
+  </div>
+  <div class="drill-summary">Two attackers versus one defender. Learn exactly when to dribble and when to pass to make the 2-v-1 count.</div>
+  <div class="drill-expanded">
+    <div class="court-panel">
+      <canvas class="drill-canvas" data-drill="8" width="460" height="252"></canvas>
+      <div class="court-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div>You</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#f97316"></div>Teammate</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#dc2626"></div>Defender</div>
+      </div>
+    </div>
+    <div class="drill-detail">
+      <div class="detail-section">
+        <div class="detail-label">Setup</div>
+        <div class="detail-text">Two attackers start near midfield, about 15 yards apart. One defender starts 20 yards in front. Keeper optional.</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">How to Run</div>
+        <div class="detail-text"><ol>
+          <li>Ball carrier dribbles straight at the defender.</li>
+          <li>Teammate stays level and wide to give a passing option.</li>
+          <li>If the defender steps to the ball, pass; if he covers the teammate, keep going and shoot.</li>
+          <li>Defender scores by winning the ball. Rotate every rep.</li>
+        </ol></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Focus Points</div>
+        <div class="detail-text"><ul>
+          <li>Commit the defender before passing — pass too early and he can recover.</li>
+          <li>Teammate: don't run offside; stay level with the ball.</li>
+          <li>Finish quickly before help arrives.</li>
+        </ul></div>
+      </div>
+      <button class="collapse-btn">▲ Collapse</button>
+    </div>
+  </div>
+  <div class="expand-hint">tap to expand ▾</div>
+</div>
+
+<!-- ── DRILL 9 ─────────────────────────────────────────────────── -->
+<div class="drill-card" data-drill="9" data-tags="solo passing touch">
+  <div class="drill-header">
+    <div class="drill-num">09</div>
+    <div>
+      <div class="drill-title">Wall Ball</div>
+      <div class="players-badge">🧍 1 player · Any sturdy wall</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-solo">Solo</span>
+    <span class="tag tag-passing">Passing</span>
+    <span class="tag tag-touch">First Touch</span>
+  </div>
+  <div class="drill-summary">A wall is the most patient passing partner in the world. Pass, control, repeat — alternating feet.</div>
+  <div class="drill-expanded">
+    <div class="court-panel">
+      <canvas class="drill-canvas" data-drill="9" width="460" height="252"></canvas>
+      <div class="court-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div>You</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#94a3b8;border-radius:2px"></div>Wall</div>
+      </div>
+    </div>
+    <div class="drill-detail">
+      <div class="detail-section">
+        <div class="detail-label">Setup</div>
+        <div class="detail-text">Stand 5–10 yards from a solid wall (a schoolyard or handball court is perfect) with one ball.</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">How to Run</div>
+        <div class="detail-text"><ol>
+          <li>Pass against the wall with your right foot; control the rebound.</li>
+          <li>Pass with your left foot; control.</li>
+          <li>Progress to one-touch passing, alternating feet.</li>
+          <li>Step farther back and add a touch to the side before each pass.</li>
+        </ol></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Focus Points</div>
+        <div class="detail-text"><ul>
+          <li>Lock your ankle and follow through toward the target.</li>
+          <li>Cushion the rebound — let your foot "give" as it arrives.</li>
+          <li>Count passes in a row without a mistake and try to beat it.</li>
+        </ul></div>
+      </div>
+      <button class="collapse-btn">▲ Collapse</button>
+    </div>
+  </div>
+  <div class="expand-hint">tap to expand ▾</div>
+</div>
+
+<!-- ── DRILL 10 ────────────────────────────────────────────────── -->
+<div class="drill-card" data-drill="10" data-tags="partner defending">
+  <div class="drill-header">
+    <div class="drill-num">10</div>
+    <div>
+      <div class="drill-title">Jockey &amp; Shadow</div>
+      <div class="players-badge">👥 2 players · 15×20 yard channel</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-partner">Partner</span>
+    <span class="tag tag-defending">Defending</span>
+  </div>
+  <div class="drill-summary">Mirror a dribbler, stay goal-side, show them wide — and pounce on the heavy touch.</div>
+  <div class="drill-expanded">
+    <div class="court-panel">
+      <canvas class="drill-canvas" data-drill="10" width="460" height="252"></canvas>
+      <div class="court-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div>You (defender)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#dc2626"></div>Attacker</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#fb923c;border-radius:2px"></div>Cone goal</div>
+      </div>
+    </div>
+    <div class="drill-detail">
+      <div class="detail-section">
+        <div class="detail-label">Setup</div>
+        <div class="detail-text">A channel about 15 yards wide. The attacker starts at one end with the ball; you start in the middle. A two-cone goal sits behind you.</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">How to Run</div>
+        <div class="detail-text"><ol>
+          <li>Attacker tries to dribble through the cone goal behind you.</li>
+          <li>You stay goal-side, side-on, and backpedal at the attacker's pace.</li>
+          <li>Steer them toward the sideline, away from the goal.</li>
+          <li>When they take a heavy touch, step in and poke the ball away. Swap after each rep.</li>
+        </ol></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Focus Points</div>
+        <div class="detail-text"><ul>
+          <li>Low center of gravity — knees bent, weight on the balls of your feet.</li>
+          <li>Watch the ball, not the attacker's tricks.</li>
+          <li>Be patient; don't dive in.</li>
+        </ul></div>
+      </div>
+      <button class="collapse-btn">▲ Collapse</button>
+    </div>
+  </div>
+  <div class="expand-hint">tap to expand ▾</div>
+</div>
+
+</div>
+
+<script>
+// ─── FIELD PERSPECTIVE ─────────────────────────────────────────
+// Canvas: 460 x 252
+// cy=0 → far end (goal line on 'half' fields), cy=1 → near end
+// cx=0 → left, cx=1 → right
+
+const PERSP = {
+  NL: {x: 24,  y: 238},
+  NR: {x: 436, y: 238},
+  FL: {x: 92,  y: 18},
+  FR: {x: 368, y: 18},
+};
+
+function c2s(cx, cy) {
+  const t = 1 - cy;
+  const {NL, NR, FL, FR} = PERSP;
+  const lx = NL.x + t * (FL.x - NL.x);
+  const rx = NR.x + t * (FR.x - NR.x);
+  const sy = NL.y + t * (FL.y - NL.y);
+  return { x: lx + cx * (rx - lx), y: sy };
+}
+
+function fillQuad(ctx, cy0, cy1, cx0, cx1, color) {
+  const tl = c2s(cx0, cy0), tr = c2s(cx1, cy0);
+  const bl = c2s(cx0, cy1), br = c2s(cx1, cy1);
+  ctx.beginPath();
+  ctx.moveTo(tl.x, tl.y); ctx.lineTo(tr.x, tr.y);
+  ctx.lineTo(br.x, br.y); ctx.lineTo(bl.x, bl.y);
+  ctx.closePath(); ctx.fillStyle = color; ctx.fill();
+}
+
+function rectLine(ctx, cx0, cy0, cx1, cy1) {
+  const pts = [c2s(cx0,cy0), c2s(cx1,cy0), c2s(cx1,cy1), c2s(cx0,cy1)];
+  ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+  pts.forEach(p => ctx.lineTo(p.x, p.y)); ctx.closePath(); ctx.stroke();
+}
+
+// half field = attacking half: 68 m wide × 52.5 m deep
+function fieldArc(ctx, ccx, ccy, rMetres, keep) {
+  const rx = rMetres / 68, ry = rMetres / 52.5;
+  ctx.beginPath();
+  let started = false;
+  for (let i = 0; i <= 64; i++) {
+    const a = Math.PI * 2 * i / 64;
+    const px = ccx + rx * Math.cos(a), py = ccy + ry * Math.sin(a);
+    if (keep && !keep(px, py)) { started = false; continue; }
+    const s = c2s(px, py);
+    if (!started) { ctx.moveTo(s.x, s.y); started = true; } else ctx.lineTo(s.x, s.y);
+  }
+  ctx.stroke();
+}
+
+const BOX_W = 40.32 / 68, BOX_D = 16.5 / 52.5;
+const SIX_W = 18.32 / 68, SIX_D = 5.5 / 52.5;
+const GOAL_W = 7.32 / 68, SPOT = 11 / 52.5;
+
+function drawGrass(ctx) {
+  fillQuad(ctx, -0.04, 1.04, -0.04, 1.04, '#2a5e25');
+  for (let i = 0; i < 8; i++) fillQuad(ctx, i / 8, (i + 1) / 8, 0, 1, i % 2 ? '#3f7a34' : '#468538');
+  fillQuad(ctx, 0, 0.22, -0.04, 1.04, 'rgba(0,0,0,0.1)');
+}
+
+function drawHalfField(ctx) {
+  drawGrass(ctx);
+  ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = 1.8;
+  rectLine(ctx, 0, 0, 1, 1);
+  ctx.lineWidth = 1.4;
+  rectLine(ctx, 0.5 - BOX_W / 2, 0, 0.5 + BOX_W / 2, BOX_D);
+  rectLine(ctx, 0.5 - SIX_W / 2, 0, 0.5 + SIX_W / 2, SIX_D);
+  fieldArc(ctx, 0.5, SPOT, 9.15, (x, y) => y >= BOX_D);
+  fieldArc(ctx, 0.5, 1, 9.15, (x, y) => y <= 1);
+  ctx.fillStyle = '#fff';
+  const sp = c2s(0.5, SPOT); ctx.beginPath(); ctx.arc(sp.x, sp.y, 1.8, 0, Math.PI * 2); ctx.fill();
+
+  // goal
+  const L = c2s(0.5 - GOAL_W / 2, 0), R = c2s(0.5 + GOAL_W / 2, 0), H = 14;
+  ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fillRect(L.x, L.y - H, R.x - L.x, H);
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.2;
+  ctx.beginPath(); ctx.moveTo(L.x, L.y); ctx.lineTo(L.x, L.y - H); ctx.lineTo(R.x, R.y - H); ctx.lineTo(R.x, R.y); ctx.stroke();
+
+  ctx.font = 'bold 9px Segoe UI'; ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  const bm = c2s(0.5, BOX_D + 0.05); ctx.fillText('PENALTY BOX', bm.x, bm.y + 3);
+  const hm = c2s(0.86, 0.96); ctx.fillText('HALFWAY', hm.x, hm.y + 3);
+}
+
+function drawGridField(ctx, drill) {
+  drawGrass(ctx);
+  if (drill.square) {
+    ctx.save(); ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = 'rgba(255,255,255,0.45)'; ctx.lineWidth = 1.2;
+    rectLine(ctx, ...drill.square);
+    ctx.restore();
+    const [x0, y0, x1, y1] = drill.square;
+    [[x0,y0],[x1,y0],[x1,y1],[x0,y1]].forEach(([x, y]) => drawCone(ctx, x, y));
+  }
+  if (drill.wall) {
+    const [x0, x1, y] = drill.wall;
+    const L = c2s(x0, y), R = c2s(x1, y), H = 26;
+    ctx.fillStyle = '#64748b'; ctx.fillRect(L.x, L.y - H, R.x - L.x, H);
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 1;
+    for (let yy = L.y - H + 6; yy < L.y; yy += 6) { ctx.beginPath(); ctx.moveTo(L.x, yy); ctx.lineTo(R.x, yy); ctx.stroke(); }
+    ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.font = 'bold 9px Segoe UI'; ctx.textAlign = 'center';
+    ctx.fillText('WALL', (L.x + R.x) / 2, L.y - H / 2 + 3);
+  }
+}
+
+function drawCone(ctx, cx, cy) {
+  const s = c2s(cx, cy), h = 6 + cy * 4, w = 3.5 + cy * 2.5;
+  ctx.beginPath();
+  ctx.moveTo(s.x, s.y - h); ctx.lineTo(s.x + w, s.y); ctx.lineTo(s.x - w, s.y); ctx.closePath();
+  ctx.fillStyle = '#fb923c'; ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.35)'; ctx.lineWidth = 0.8; ctx.stroke();
+}
+
+function drawDot(ctx, cx, cy, color, label) {
+  const s = c2s(cx, cy);
+  const r  = 6 + cy * 5;
+  const fs = 6 + cy * 2.5;
+  ctx.beginPath(); ctx.arc(s.x, s.y, r, 0, Math.PI*2);
+  ctx.fillStyle = color; ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 1.4; ctx.stroke();
+  ctx.fillStyle = '#fff';
+  ctx.font = `bold ${Math.round(fs)}px Segoe UI`;
+  ctx.textAlign = 'center';
+  ctx.fillText(label, s.x, s.y + fs * 0.38);
+}
+
+function drawBall(ctx, cx, cy, arcOff) {
+  const s = c2s(cx, cy);
+  const r = 3 + cy * 2.5;
+  if (arcOff > 3) {
+    ctx.beginPath();
+    ctx.ellipse(s.x, s.y, r * 0.9, r * 0.35, 0, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(0,0,0,0.28)'; ctx.fill();
+  }
+  ctx.beginPath(); ctx.arc(s.x, s.y - arcOff, r, 0, Math.PI*2);
+  ctx.fillStyle = '#fff'; ctx.fill();
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 0.8; ctx.stroke();
+  ctx.beginPath(); ctx.arc(s.x, s.y - arcOff, r * 0.38, 0, Math.PI*2);
+  ctx.fillStyle = '#111'; ctx.fill();
+}
+
+function drawShotLabel(ctx, label) {
+  if (!label) return;
+  ctx.save();
+  ctx.font = 'bold 11px Segoe UI';
+  const w = ctx.measureText(label).width + 14;
+  ctx.fillStyle = 'rgba(30,41,59,0.88)';
+  ctx.beginPath();
+  ctx.roundRect(452 - w, 6, w, 20, 4);
+  ctx.fill();
+  ctx.fillStyle = '#facc15';
+  ctx.textAlign = 'left';
+  ctx.fillText(label, 459 - w, 20);
+  ctx.restore();
+}
+
+function easeInOut(t) {
+  return t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t;
+}
+
+// ─── DRILL ANIMATION DATA ──────────────────────────────────────
+// field: 'half' (attacking half, goal at top) or 'grid' (open grass).
+// Each step moves the ball from → to; `move` slides players to new spots
+// during the same step (so dribbling = ball and player moving together).
+const C = { you:'#2563eb', tm:'#f97316', opp:'#dc2626', gk:'#a855f7' };
+
+const DRILLS = {
+  1: {
+    field: 'grid', square: [0.18, 0.12, 0.82, 0.88],
+    players: { you:[0.5,0.14], a:[0.8,0.5], b:[0.5,0.86], c:[0.2,0.5], d:[0.5,0.5] },
+    colors:  { you:C.you, a:C.tm, b:C.tm, c:C.tm, d:C.opp },
+    labels:  { you:'YOU', a:'TM', b:'TM', c:'TM', d:'DEF' },
+    resetPlayers: true,
+    sequence: [
+      { from:[0.5,0.16],  to:[0.78,0.5],  dur:600, pause:140, label:'PASS', move:{ d:[0.62,0.38] } },
+      { from:[0.78,0.5],  to:[0.52,0.84], dur:600, pause:140, move:{ d:[0.64,0.64], you:[0.42,0.14] } },
+      { from:[0.52,0.84], to:[0.22,0.5],  dur:600, pause:140, move:{ d:[0.38,0.66] } },
+      { from:[0.22,0.5],  to:[0.78,0.5],  dur:700, pause:300, label:'SPLIT PASS!', move:{ d:[0.3,0.56] } },
+      { from:[0.78,0.5],  to:[0.44,0.16], dur:600, pause:140, move:{ d:[0.56,0.4] } },
+      { from:[0.44,0.16], to:[0.22,0.48], dur:600, pause:600, move:{ d:[0.36,0.42], you:[0.5,0.14] } },
+    ]
+  },
+  2: {
+    field: 'half', cones: [[0.4,0.58]],
+    players: { you:[0.36,0.80], p:[0.62,0.56], gk:[0.5,0.03] },
+    colors:  { you:C.you, p:C.tm, gk:C.gk },
+    labels:  { you:'YOU', p:'PTR', gk:'GK' },
+    resetPlayers: true,
+    sequence: [
+      { from:[0.36,0.77], to:[0.38,0.67], dur:700, pause:80,  label:'DRIBBLE', move:{ you:[0.38,0.69] } },
+      { from:[0.38,0.67], to:[0.61,0.565], dur:520, pause:60, label:'GIVE', move:{ you:[0.36,0.6] } },
+      { from:[0.61,0.565], to:[0.42,0.40], dur:620, pause:60, label:'GO!', move:{ you:[0.42,0.42] } },
+      { from:[0.42,0.40], to:[0.45,0.30], dur:420, pause:60, move:{ you:[0.45,0.32] } },
+      { from:[0.45,0.30], to:[0.545,0.0], arcH:5, dur:520, pause:800, label:'SHOOT!', move:{ gk:[0.47,0.03] } },
+    ]
+  },
+  3: {
+    field: 'grid', cones: [[0.5,0.78],[0.5,0.66],[0.5,0.54],[0.5,0.42],[0.5,0.30],[0.5,0.18]],
+    players: { you:[0.5,0.94] },
+    colors:  { you:C.you },
+    labels:  { you:'YOU' },
+    resetPlayers: true,
+    sequence: [
+      { from:[0.5,0.91],  to:[0.59,0.70], dur:520, pause:0, label:'WEAVE', move:{ you:[0.59,0.73] } },
+      { from:[0.59,0.70], to:[0.41,0.58], dur:520, pause:0, move:{ you:[0.41,0.61] } },
+      { from:[0.41,0.58], to:[0.59,0.46], dur:520, pause:0, label:'SMALL TOUCHES', move:{ you:[0.59,0.49] } },
+      { from:[0.59,0.46], to:[0.41,0.34], dur:520, pause:0, move:{ you:[0.41,0.37] } },
+      { from:[0.41,0.34], to:[0.59,0.22], dur:520, pause:0, move:{ you:[0.59,0.25] } },
+      { from:[0.59,0.22], to:[0.5,0.08],  dur:520, pause:600, label:'TURN & REPEAT', move:{ you:[0.5,0.11] } },
+    ]
+  },
+  4: {
+    field: 'grid', cones: [[0.26,0.30],[0.34,0.30],[0.70,0.44],[0.70,0.56],[0.31,0.73],[0.39,0.73],[0.62,0.16],[0.70,0.16]],
+    players: { you:[0.3,0.18], p:[0.3,0.44] },
+    colors:  { you:C.you, p:C.tm },
+    labels:  { you:'YOU', p:'PTR' },
+    resetPlayers: true,
+    sequence: [
+      { from:[0.3,0.2],   to:[0.3,0.42],  dur:560, pause:120, label:'PASS THROUGH A GATE' },
+      { from:[0.3,0.42],  to:[0.78,0.5],  dur:900, pause:80,  label:'DRIBBLE TO A NEW GATE', move:{ p:[0.8,0.5], you:[0.6,0.5] } },
+      { from:[0.78,0.5],  to:[0.62,0.5],  dur:480, pause:120, label:'PASS' },
+      { from:[0.62,0.5],  to:[0.35,0.64], dur:900, pause:80,  label:'TOUCH AWAY', move:{ you:[0.35,0.62], p:[0.35,0.84] } },
+      { from:[0.35,0.64], to:[0.35,0.82], dur:480, pause:600, label:'PASS' },
+    ]
+  },
+  5: {
+    field: 'half',
+    players: { you:[0.5,0.64], d:[0.5,0.42], gk:[0.5,0.03] },
+    colors:  { you:C.you, d:C.opp, gk:C.gk },
+    labels:  { you:'YOU', d:'DEF', gk:'GK' },
+    resetPlayers: true,
+    sequence: [
+      { from:[0.5,0.62],  to:[0.5,0.49],  dur:700, pause:60, label:'ATTACK THE DEFENDER', move:{ you:[0.5,0.51], d:[0.5,0.40] } },
+      { from:[0.5,0.49],  to:[0.47,0.46], dur:260, pause:80, label:'FEINT LEFT…', move:{ you:[0.47,0.48], d:[0.45,0.40] } },
+      { from:[0.47,0.46], to:[0.64,0.36], dur:460, pause:60, label:'…CUT RIGHT!', move:{ you:[0.63,0.38], d:[0.48,0.37] } },
+      { from:[0.64,0.36], to:[0.62,0.22], dur:520, pause:60, move:{ you:[0.62,0.24], d:[0.55,0.29] } },
+      { from:[0.62,0.22], to:[0.462,0.0], arcH:4, dur:520, pause:800, label:'SHOOT FAR POST', move:{ gk:[0.55,0.03] } },
+    ]
+  },
+  6: {
+    field: 'half', cones: [[0.56,0.36]],
+    players: { you:[0.5,0.40], f:[0.5,0.68], gk:[0.5,0.03] },
+    colors:  { you:C.you, f:C.tm, gk:C.gk },
+    labels:  { you:'YOU', f:'FEED', gk:'GK' },
+    resetPlayers: true,
+    sequence: [
+      { from:[0.5,0.66],  to:[0.5,0.42],  dur:560, pause:100, label:'FEED TO FEET' },
+      { from:[0.5,0.42],  to:[0.42,0.34], dur:420, pause:60,  label:'TURN ON 1ST TOUCH', move:{ you:[0.42,0.36] } },
+      { from:[0.42,0.34], to:[0.54,0.0],  arcH:5, dur:520, pause:800, label:'SHOOT!', move:{ gk:[0.46,0.03] } },
+    ]
+  },
+  7: {
+    field: 'half',
+    players: { you:[0.92,0.62], s1:[0.42,0.48], s2:[0.6,0.5], gk:[0.5,0.03] },
+    colors:  { you:C.you, s1:C.tm, s2:C.tm, gk:C.gk },
+    labels:  { you:'YOU', s1:'TM', s2:'TM', gk:'GK' },
+    resetPlayers: true,
+    sequence: [
+      { from:[0.92,0.60], to:[0.92,0.12], dur:1100, pause:60, label:'DOWN THE LINE', move:{ you:[0.92,0.14], s1:[0.40,0.30], s2:[0.58,0.32] } },
+      { from:[0.92,0.12], to:[0.41,0.08], arcH:34, dur:760, pause:60, label:'CROSS!', move:{ s1:[0.41,0.09], s2:[0.57,0.07], gk:[0.56,0.03] } },
+      { from:[0.41,0.08], to:[0.49,0.0], arcH:5, dur:340, pause:800, label:'FINISH AT FAR POST' },
+    ]
+  },
+  8: {
+    field: 'half',
+    players: { you:[0.4,0.66], tm:[0.66,0.64], d:[0.52,0.36], gk:[0.5,0.03] },
+    colors:  { you:C.you, tm:C.tm, d:C.opp, gk:C.gk },
+    labels:  { you:'YOU', tm:'TM', d:'DEF', gk:'GK' },
+    resetPlayers: true,
+    sequence: [
+      { from:[0.4,0.64],  to:[0.45,0.47], dur:900, pause:60, label:'DRAW THE DEFENDER', move:{ you:[0.45,0.49], tm:[0.68,0.48], d:[0.47,0.40] } },
+      { from:[0.45,0.47], to:[0.67,0.30], dur:560, pause:60, label:'PASS AS HE COMMITS', move:{ tm:[0.67,0.32], you:[0.46,0.42], d:[0.45,0.42] } },
+      { from:[0.67,0.30], to:[0.465,0.0], arcH:4, dur:520, pause:800, label:'SHOOT!', move:{ gk:[0.55,0.03] } },
+    ]
+  },
+  9: {
+    field: 'grid', wall: [0.18, 0.82, 0.1],
+    players: { you:[0.5,0.58] },
+    colors:  { you:C.you },
+    labels:  { you:'YOU' },
+    resetPlayers: true,
+    sequence: [
+      { from:[0.5,0.55],  to:[0.45,0.11], dur:440, pause:0,   label:'PASS — RIGHT FOOT' },
+      { from:[0.45,0.11], to:[0.41,0.55], dur:440, pause:220, label:'CONTROL', move:{ you:[0.42,0.58] } },
+      { from:[0.41,0.55], to:[0.55,0.11], dur:440, pause:0,   label:'PASS — LEFT FOOT' },
+      { from:[0.55,0.11], to:[0.59,0.55], dur:440, pause:220, label:'CONTROL', move:{ you:[0.58,0.58] } },
+      { from:[0.59,0.55], to:[0.5,0.11],  dur:400, pause:0,   label:'ONE-TOUCH' },
+      { from:[0.5,0.11],  to:[0.5,0.55],  dur:400, pause:500, move:{ you:[0.5,0.58] } },
+    ]
+  },
+  10: {
+    field: 'grid', cones: [[0.40,0.92],[0.60,0.92]],
+    players: { opp:[0.5,0.18], you:[0.5,0.44] },
+    colors:  { opp:C.opp, you:C.you },
+    labels:  { opp:'OPP', you:'YOU' },
+    resetPlayers: true,
+    sequence: [
+      { from:[0.5,0.21],  to:[0.63,0.36], dur:800, pause:40, label:'STAY GOAL-SIDE', move:{ opp:[0.63,0.33], you:[0.59,0.52] } },
+      { from:[0.63,0.36], to:[0.42,0.48], dur:800, pause:40, label:'SIDE-ON, BACKPEDAL', move:{ opp:[0.42,0.45], you:[0.47,0.62] } },
+      { from:[0.42,0.48], to:[0.56,0.60], dur:700, pause:40, label:'SHOW HIM WIDE', move:{ opp:[0.56,0.57], you:[0.6,0.70] } },
+      { from:[0.56,0.60], to:[0.62,0.69], dur:380, pause:40, label:'HEAVY TOUCH…' },
+      { from:[0.62,0.69], to:[0.88,0.74], dur:420, pause:800, label:'POKE IT AWAY!', move:{ you:[0.62,0.71] } },
+    ]
+  },
+};
+
+// ─── ANIMATION ENGINE ─────────────────────────────────────────
+let activeAnim = null; // { raf, drillNum }
+
+function stopAnim() {
+  if (activeAnim) { cancelAnimationFrame(activeAnim.raf); activeAnim = null; }
+}
+
+function drawScene(ctx, drill, players, ball, label) {
+  if (drill.field === 'half') drawHalfField(ctx); else drawGridField(ctx, drill);
+  (drill.cones || []).forEach(([x, y]) => drawCone(ctx, x, y));
+  Object.keys(players).sort((a, b) => players[a][1] - players[b][1]).forEach(k => {
+    drawDot(ctx, players[k][0], players[k][1], drill.colors[k], drill.labels[k]);
+  });
+  drawBall(ctx, ball[0], ball[1], ball[2] || 0);
+  drawShotLabel(ctx, label);
+}
+
+function startDrillAnim(canvas, drillNum) {
+  stopAnim();
+  const drill = DRILLS[drillNum];
+  if (!drill) return;
+
+  let players = JSON.parse(JSON.stringify(drill.players));
+  let startPos = null;
+  let shotIdx = 0;
+  let phase = 'anim'; // 'anim' | 'pause'
+  let phaseStart = null;
+
+  function renderFrame(now) {
+    if (!phaseStart) phaseStart = now;
+    const shot = drill.sequence[shotIdx];
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (phase === 'anim') {
+      if (!startPos) startPos = JSON.parse(JSON.stringify(players));
+      const raw = Math.min((now - phaseStart) / shot.dur, 1);
+      const e = easeInOut(raw);
+      const bx = shot.from[0] + e * (shot.to[0] - shot.from[0]);
+      const by = shot.from[1] + e * (shot.to[1] - shot.from[1]);
+      const arc = (shot.arcH || 0) * 4 * raw * (1 - raw);
+
+      // slide any moving players alongside the ball
+      Object.entries(shot.move || {}).forEach(([k, to]) => {
+        const s = startPos[k];
+        players[k] = [s[0] + e * (to[0] - s[0]), s[1] + e * (to[1] - s[1])];
+      });
+
+      drawScene(ctx, drill, players, [bx, by, arc], shot.label);
+
+      if (raw >= 1) {
+        startPos = null;
+        phase = 'pause'; phaseStart = now;
+      }
+    } else {
+      drawScene(ctx, drill, players, shot.to, shot.label);
+
+      if (now - phaseStart >= (shot.pause || 0)) {
+        shotIdx = (shotIdx + 1) % drill.sequence.length;
+        if (shotIdx === 0 && drill.resetPlayers) {
+          players = JSON.parse(JSON.stringify(drill.players));
+        }
+        phase = 'anim'; phaseStart = now;
+      }
+    }
+
+    activeAnim = { raf: requestAnimationFrame(renderFrame), drillNum };
+  }
+
+  activeAnim = { raf: requestAnimationFrame(renderFrame), drillNum };
+}
+
+// ─── CARD INTERACTION ─────────────────────────────────────────
+document.querySelectorAll('.drill-card').forEach(card => {
+  card.addEventListener('click', e => {
+    // Collapse button
+    if (e.target.classList.contains('collapse-btn')) {
+      card.classList.remove('expanded');
+      stopAnim();
+      return;
+    }
+    // Already expanded — do nothing (let collapse btn handle it)
+    if (card.classList.contains('expanded')) return;
+
+    // Collapse any other open card
+    document.querySelectorAll('.drill-card.expanded').forEach(c => c.classList.remove('expanded'));
+    stopAnim();
+
+    card.classList.add('expanded');
+    const drillNum = parseInt(card.dataset.drill);
+    const canvas = card.querySelector('.drill-canvas');
+    if (canvas) startDrillAnim(canvas, drillNum);
+
+    // Scroll card into view
+    setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+  });
+});
+
+// ─── FILTER ───────────────────────────────────────────────────
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => { b.className = 'filter-btn'; });
+    const f = btn.dataset.filter;
+    btn.className = f === 'all' ? 'filter-btn active' : 'filter-btn active-' + f;
+
+    document.querySelectorAll('.drill-card').forEach(card => {
+      const tags = (card.dataset.tags || '').split(' ');
+      const show = f === 'all' || tags.includes(f);
+      card.classList.toggle('hidden', !show);
+      if (!show && card.classList.contains('expanded')) {
+        card.classList.remove('expanded');
+        stopAnim();
+      }
+    });
+  });
+});
+</script>
+
+  <footer style="margin-top:48px;font-size:12px;color:#888;letter-spacing:1px;text-align:center;">Soccer &mdash; Drills<br><span style="color:#aaa;font-size:12px;letter-spacing:1px;">Content generated with AI assistance &mdash; verify tips with a qualified coach.</span></footer>
+  <script>
+    document.querySelector('.nav-toggle').addEventListener('click', () => {
+      document.querySelector('.nav-links').classList.toggle('open');
+    });
+  </script>
+</body>
+</html>

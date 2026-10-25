@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Helpful Terms — Soccer Hub</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #eee; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 76px 16px 40px; }
+
+    nav { position: fixed; top: 0; width: 100%; background: #1a1a24; padding: 16px 40px; display: flex; gap: 28px; justify-content: center; border-bottom: 1px solid #2a2a3a; z-index: 100; flex-wrap: wrap; }
+    nav a { color: #c9a84c; text-decoration: none; font-size: 0.92rem; font-weight: 600; letter-spacing: 0.05em; transition: color 0.2s; }
+    nav a:hover { color: #ffffff; }
+    nav a.active { color: #ffffff; border-bottom: 2px solid #7dd3fc; padding-bottom: 2px; }
+    .nav-toggle { display: none; background: none; border: none; color: #c9a84c; font-size: 1.5rem; cursor: pointer; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); }
+    .nav-links { display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; }
+    @media (max-width: 640px) {
+      nav { flex-direction: column; align-items: flex-start; padding: 14px 20px; gap: 0; position: relative; }
+      .nav-toggle { display: block; }
+      .nav-links { display: none; flex-direction: column; gap: 14px; padding: 14px 0 6px; width: 100%; }
+      .nav-links.open { display: flex; }
+    }
+
+    header { text-align: center; margin: 24px 0 32px; }
+    header h1 { font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #e8d5a3, #c9a84c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    header p { margin-top: 8px; font-size: 13px; color: #666; letter-spacing: 2px; text-transform: uppercase; }
+
+    .terms-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px 48px;
+      width: 100%;
+      max-width: 860px;
+    }
+    .term { display: flex; flex-direction: column; gap: 4px; border-bottom: 1px solid #1e2a3a; padding-bottom: 16px; }
+    .term-name { font-size: 0.95rem; font-weight: 700; color: #fbbf24; font-style: italic; text-decoration: underline; text-underline-offset: 3px; }
+    .term-def { font-size: 0.875rem; color: #94a3b8; line-height: 1.5; }
+
+    footer { margin-top: 48px; font-size: 12px; color: #888; letter-spacing: 1px; text-align: center; }
+
+    @media (max-width: 600px) {
+      .terms-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+    <div class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../about.html">About</a>
+      <a href="why-soccer.html">Why Soccer</a>
+      <a href="rules.html">Rules</a>
+      <a href="trainer.html">Training</a>
+      <a href="drills.html">Drills</a>
+      <a href="fair-play.html">Fair Play</a>
+      <a href="helpful-terms.html" class="active">Helpful Terms</a>
+      <a href="coach.html">Ask the Coach</a>
+    </div>
+  </nav>
+
+  <header>
+    <h1>📖 Helpful Terms</h1>
+    <p>Soccer vocabulary you need to know</p>
+  </header>
+
+  <div class="terms-grid">
+    <div class="term"><span class="term-name">Pitch</span><span class="term-def">The playing field. Also called the park or, in the U.S., simply the field</span></div>
+    <div class="term"><span class="term-name">Touchline</span><span class="term-def">The long sideline. Ball fully over it = a throw-in</span></div>
+    <div class="term"><span class="term-name">Box (Penalty Area)</span><span class="term-def">The large rectangle in front of each goal. The keeper can handle the ball here; defensive fouls here mean a penalty kick</span></div>
+    <div class="term"><span class="term-name">Six-Yard Box</span><span class="term-def">The small rectangle right in front of goal (the goal area), where goal kicks are taken</span></div>
+    <div class="term"><span class="term-name">Offside</span><span class="term-def">Being past the second-to-last defender and the ball when a teammate passes to you, then getting involved in play</span></div>
+    <div class="term"><span class="term-name">Set Piece</span><span class="term-def">A planned play from a restart — corner kicks, free kicks, and sometimes long throw-ins</span></div>
+    <div class="term"><span class="term-name">Through Ball</span><span class="term-def">A pass played into space behind the defense for a teammate to run onto</span></div>
+    <div class="term"><span class="term-name">One-Two (Give-and-Go)</span><span class="term-def">Pass to a teammate, sprint past your defender, and get it right back. Also called a wall pass</span></div>
+    <div class="term"><span class="term-name">Cross</span><span class="term-def">A pass from a wide area into the box, usually aimed for a teammate to head or volley</span></div>
+    <div class="term"><span class="term-name">Near Post / Far Post</span><span class="term-def">The goalpost closest to the ball / the one farthest away. "Back post" means far post</span></div>
+    <div class="term"><span class="term-name">Volley</span><span class="term-def">Striking the ball before it touches the ground. A half-volley is struck just as it bounces</span></div>
+    <div class="term"><span class="term-name">First Touch</span><span class="term-def">How you control the ball when it first reaches you — a good one sets up your next move</span></div>
+    <div class="term"><span class="term-name">Nutmeg</span><span class="term-def">Playing the ball through an opponent's legs and collecting it on the other side</span></div>
+    <div class="term"><span class="term-name">Overlap</span><span class="term-def">A teammate (often a fullback) running around the outside of the player with the ball to create a 2-v-1</span></div>
+    <div class="term"><span class="term-name">Switch the Play</span><span class="term-def">A long pass from one side of the field to the other to attack where the defense is thin</span></div>
+    <div class="term"><span class="term-name">Pressing</span><span class="term-def">Closing down opponents quickly as a team to win the ball back high up the field</span></div>
+    <div class="term"><span class="term-name">Counterattack</span><span class="term-def">Attacking fast right after winning the ball, before the other team can get back into shape</span></div>
+    <div class="term"><span class="term-name">Jockey</span><span class="term-def">Defending by staying on your feet, side-on, slowing the attacker down instead of diving in</span></div>
+    <div class="term"><span class="term-name">Man On!</span><span class="term-def">Warning shout to a teammate that an opponent is right behind them</span></div>
+    <div class="term"><span class="term-name">Clean Sheet</span><span class="term-def">A game in which a team (and its keeper) concedes no goals. Also called a shutout</span></div>
+    <div class="term"><span class="term-name">Hat Trick</span><span class="term-def">Three goals by one player in one game. Two goals is a brace</span></div>
+    <div class="term"><span class="term-name">Stoppage Time</span><span class="term-def">Minutes added at the end of each half for time lost to injuries, subs, and delays. Also called injury or added time</span></div>
+    <div class="term"><span class="term-name">Rondo</span><span class="term-def">A keep-away passing drill: a circle of players passing around one or two defenders in the middle</span></div>
+    <div class="term"><span class="term-name">Futsal</span><span class="term-def">An indoor 5-a-side version of soccer with a smaller, heavier, low-bounce ball</span></div>
+    <div class="term"><span class="term-name">Walking Soccer</span><span class="term-def">A slower version for older or returning players: no running, no slide tackles, and usually no ball above head height</span></div>
+    <div class="term"><span class="term-name">Bicycle Kick</span><span class="term-def">An acrobatic overhead kick, with the player's back to goal and body in the air</span></div>
+  </div>
+
+  <footer>Soccer &mdash; Helpful Terms<br><span style="color:#aaa;font-size:12px;letter-spacing:1px;">Content generated with AI assistance.</span></footer>
+  <script>
+    document.querySelector('.nav-toggle').addEventListener('click', () => {
+      document.querySelector('.nav-links').classList.toggle('open');
+    });
+  </script>
+</body>
+</html>

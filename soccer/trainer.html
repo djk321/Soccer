@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decision Trainer — Soccer Hub</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #eee; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 76px 16px 20px; }
+
+  nav { position: fixed; top: 0; width: 100%; background: #1a1a24; padding: 16px 40px; display: flex; gap: 28px; justify-content: center; border-bottom: 1px solid #2a2a3a; z-index: 100; flex-wrap: wrap; }
+  nav a { color: #c9a84c; text-decoration: none; font-size: 0.92rem; font-weight: 600; letter-spacing: 0.05em; transition: color 0.2s; }
+  nav a:hover { color: #ffffff; }
+  nav a.active { color: #ffffff; border-bottom: 2px solid #7dd3fc; padding-bottom: 2px; }
+  .nav-toggle { display: none; background: none; border: none; color: #c9a84c; font-size: 1.5rem; cursor: pointer; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); }
+  .nav-links { display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; }
+  @media (max-width: 640px) {
+    nav { flex-direction: column; align-items: flex-start; padding: 14px 20px; gap: 0; position: relative; }
+    .nav-toggle { display: block; }
+    .nav-links { display: none; flex-direction: column; gap: 14px; padding: 14px 0 6px; width: 100%; }
+    .nav-links.open { display: flex; }
+  }
+  h1 { font-size: 1.5rem; color: #7dd3fc; margin-bottom: 2px; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
+  .subtitle { font-size: 0.78rem; color: #64748b; margin-bottom: 16px; text-align: center; }
+
+  .stats { display: flex; gap: 24px; margin-bottom: 14px; justify-content: center; }
+  .stat { text-align: center; }
+  .stat-val { font-size: 1.6rem; font-weight: bold; color: #7dd3fc; line-height: 1; }
+  .stat-label { font-size: 0.65rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+  .filter-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; justify-content: center; }
+  .filter-btn { padding: 5px 14px; border-radius: 20px; border: 1.5px solid #334155; background: transparent; color: #94a3b8; font-size: 0.78rem; cursor: pointer; transition: all 0.15s; }
+  .filter-btn:hover { border-color: #7dd3fc; color: #7dd3fc; }
+  .filter-btn.active-all { background: #1e3a5f; border-color: #7dd3fc; color: #7dd3fc; }
+  .filter-btn.active-Beginner { background: #064e3b; border-color: #10b981; color: #6ee7b7; }
+  .filter-btn.active-Intermediate { background: #1e3a5f; border-color: #3b82f6; color: #93c5fd; }
+  .filter-btn.active-Advanced { background: #450a0a; border-color: #ef4444; color: #fca5a5; }
+
+  .game-area { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
+  canvas { border-radius: 10px; display: block; max-width: 100%; height: auto; }
+
+  .right-panel { width: 300px; display: flex; flex-direction: column; gap: 10px; }
+  .scenario-box { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; }
+  .scenario-title { font-size: 0.65rem; color: #7dd3fc; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .scenario-text { font-size: 0.87rem; color: #e2e8f0; line-height: 1.55; }
+  .difficulty-badge { font-size: 0.68rem; padding: 2px 9px; border-radius: 10px; display: inline-block; margin-bottom: 8px; font-weight: 600; }
+  .d-Beginner { background: #064e3b; color: #6ee7b7; }
+  .d-Intermediate { background: #1e3a5f; color: #93c5fd; }
+  .d-Advanced { background: #450a0a; color: #fca5a5; }
+
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .shot-btn { background: #1e293b; border: 1.5px solid #334155; border-radius: 7px; padding: 11px 8px; cursor: pointer; font-size: 0.81rem; color: #cbd5e1; transition: all 0.15s; text-align: center; line-height: 1.3; }
+  .shot-btn:hover:not(:disabled) { background: #273654; border-color: #7dd3fc; color: #fff; transform: translateY(-1px); }
+  .shot-btn.correct { background: #064e3b; border-color: #10b981; color: #6ee7b7; }
+  .shot-btn.wrong { background: #450a0a; border-color: #ef4444; color: #fca5a5; }
+  .shot-btn.reveal { background: #1e3a5f; border-color: #3b82f6; color: #93c5fd; }
+  .shot-btn:disabled { cursor: default; opacity: 0.85; }
+
+  .feedback-box { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 12px; font-size: 0.83rem; line-height: 1.55; min-height: 70px; color: #64748b; transition: all 0.2s; }
+  .feedback-box.correct { border-color: #10b981; color: #6ee7b7; background: #042f1e; }
+  .feedback-box.wrong { border-color: #ef4444; color: #fca5a5; background: #2d0808; }
+
+  .next-btn { background: #7dd3fc; color: #0f172a; border: none; border-radius: 7px; padding: 11px; font-size: 0.92rem; font-weight: bold; cursor: pointer; transition: background 0.15s; letter-spacing: 0.5px; }
+  .next-btn:hover { background: #38bdf8; }
+
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 12px; justify-content: center; }
+  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 0.7rem; color: #64748b; }
+  .leg-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  .sound-toggle { position: fixed; top: 68px; right: 16px; background: #1e293b; border: 1px solid #334155; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-size: 0.78rem; color: #94a3b8; transition: all 0.15s; z-index: 101; }
+  .sound-toggle:hover { border-color: #7dd3fc; color: #7dd3fc; }
+
+  @media (max-width: 640px) {
+    .right-panel { width: 100%; max-width: 340px; }
+    .stats { gap: 16px; }
+    .sound-toggle { top: auto; bottom: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+  <div class="nav-links">
+    <a href="../index.html">Home</a>
+    <a href="../about.html">About</a>
+    <a href="why-soccer.html">Why Soccer</a>
+    <a href="rules.html">Rules</a>
+    <a href="trainer.html" class="active">Training</a>
+    <a href="drills.html">Drills</a>
+    <a href="fair-play.html">Fair Play</a>
+    <a href="helpful-terms.html">Helpful Terms</a>
+    <a href="coach.html">Ask the Coach</a>
+  </div>
+</nav>
+
+<button class="sound-toggle" id="sound-toggle" onclick="toggleSound()">🔊 Sound ON</button>
+
+<h1>⚽ Soccer Decision Trainer</h1>
+<p class="subtitle">Read the scenario · Study the pitch · Pick the best play</p>
+
+<div id="game-page">
+
+<div class="stats">
+  <div class="stat"><div class="stat-val" id="score">0</div><div class="stat-label">Correct</div></div>
+  <div class="stat"><div class="stat-val" id="total">0</div><div class="stat-label">Played</div></div>
+  <div class="stat"><div class="stat-val" id="streak">0</div><div class="stat-label">Streak 🔥</div></div>
+  <div class="stat"><div class="stat-val" id="pct">—</div><div class="stat-label">Accuracy</div></div>
+</div>
+
+<div class="filter-row">
+  <button class="filter-btn active-all" id="filter-all" onclick="setFilter('all')">All Levels</button>
+  <button class="filter-btn" id="filter-Beginner" onclick="setFilter('Beginner')">🟢 Beginner</button>
+  <button class="filter-btn" id="filter-Intermediate" onclick="setFilter('Intermediate')">🔵 Intermediate</button>
+  <button class="filter-btn" id="filter-Advanced" onclick="setFilter('Advanced')">🔴 Advanced</button>
+</div>
+
+<div class="legend">
+  <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div>You</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#f97316"></div>Teammates</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#dc2626"></div>Opponents</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#a855f7"></div>Goalkeepers</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#fff"></div>Ball</div>
+</div>
+
+<div class="game-area">
+  <div><canvas id="pitch" width="710" height="400"></canvas></div>
+  <div class="right-panel">
+    <div class="scenario-box">
+      <div class="scenario-title">Scenario</div>
+      <div id="diff-badge" class="difficulty-badge d-Beginner">Beginner</div>
+      <div class="scenario-text" id="scenario-text">Loading...</div>
+    </div>
+    <div class="options-grid" id="options"></div>
+    <div class="feedback-box" id="feedback">Choose the best play above.</div>
+    <button class="next-btn" id="next-btn" onclick="nextScenario()" style="display:none">Next Scenario →</button>
+  </div>
+</div>
+</div> <!-- /game-page -->
+
+<script>
+// ─── SOUND ENGINE ───────────────────────────────────────────────
+let soundOn = true;
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let actx;
+function getAudioCtx() { if (!actx) actx = new AudioCtx(); return actx; }
+
+function playCorrect() {
+  if (!soundOn) return;
+  const ctx = getAudioCtx(), t = ctx.currentTime;
+
+  // Boot-on-ball thump — short low-passed noise + falling sine
+  const dur = 0.06;
+  const buf = ctx.createBuffer(1, ctx.sampleRate * dur, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1);
+  const noise = ctx.createBufferSource();
+  noise.buffer = buf;
+  const lp = ctx.createBiquadFilter();
+  lp.type = 'lowpass'; lp.frequency.value = 900;
+  const ng = ctx.createGain();
+  ng.gain.setValueAtTime(1.2, t);
+  ng.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  noise.connect(lp); lp.connect(ng); ng.connect(ctx.destination);
+  noise.start(t); noise.stop(t + dur);
+
+  const body = ctx.createOscillator(), bg = ctx.createGain();
+  body.type = 'sine'; body.frequency.setValueAtTime(160, t);
+  body.frequency.exponentialRampToValueAtTime(55, t + 0.14);
+  bg.gain.setValueAtTime(0.5, t);
+  bg.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+  body.connect(bg); bg.connect(ctx.destination);
+  body.start(t); body.stop(t + 0.16);
+
+  // Referee-style double whistle chirp
+  [0.22, 0.36].forEach(off => {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    const trill = ctx.createOscillator(), tg = ctx.createGain();
+    o.type = 'sine'; o.frequency.value = 2900;
+    trill.frequency.value = 38; tg.gain.value = 120;
+    trill.connect(tg); tg.connect(o.frequency);
+    g.gain.setValueAtTime(0, t + off);
+    g.gain.linearRampToValueAtTime(0.07, t + off + 0.01);
+    g.gain.setValueAtTime(0.07, t + off + 0.08);
+    g.gain.exponentialRampToValueAtTime(0.001, t + off + 0.11);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(t + off); trill.start(t + off);
+    o.stop(t + off + 0.12); trill.stop(t + off + 0.12);
+  });
+}
+
+function playWrong() {
+  if (!soundOn) return;
+  const ctx = getAudioCtx(), t = ctx.currentTime;
+
+  // Descending groan — the crowd's "ohhhh"
+  [130, 195, 260].forEach((freq, i) => {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = i === 0 ? 'sine' : 'triangle';
+    o.frequency.setValueAtTime(freq, t + 0.02);
+    o.frequency.exponentialRampToValueAtTime(freq * 0.58, t + 0.75);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.14 - i * 0.03, t + 0.06);
+    g.gain.setValueAtTime(0.14 - i * 0.03, t + 0.25);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.78);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(t); o.stop(t + 0.8);
+  });
+}
+
+function playClick() {
+  if (!soundOn) return;
+  const ctx = getAudioCtx(), t = ctx.currentTime;
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.connect(g); g.connect(ctx.destination);
+  o.type = 'sine';
+  o.frequency.setValueAtTime(800, t);
+  o.frequency.exponentialRampToValueAtTime(400, t + 0.05);
+  g.gain.setValueAtTime(0.1, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+  o.start(t); o.stop(t + 0.07);
+}
+
+function toggleSound() {
+  soundOn = !soundOn;
+  document.getElementById('sound-toggle').textContent = soundOn ? '🔊 Sound ON' : '🔇 Sound OFF';
+}
+
+// ─── PITCH COORDINATE SYSTEM ────────────────────────────────────
+// cy = 0.0 → TOP    = opponents' goal line (you attack UP the screen)
+// cy = 0.5 → halfway line
+// cy = 1.0 → BOTTOM = your own goal line
+// cx = 0.0 → left touchline, cx = 1.0 → right touchline
+// Pitch is modeled as 105 m × 68 m, so markings are scaled from those.
+//
+// Each scenario: players { you:[x,y], mates:[[x,y]...], opps:[[x,y]...],
+//   gks:[[x,y]...] }, ball:[x,y], optional runs:[[x1,y1,x2,y2]...] (dashed
+//   arrows), options, correct (index), targetPos, arcHeight, feedback.
+
+const scenarios = [
+  // ── BEGINNER ──────────────────────────────────────────────────
+  {
+    difficulty: "Beginner",
+    text: "You have the ball near midfield. A defender is charging straight at you, and a teammate is wide open on your right.",
+    players: { you:[0.45,0.56], mates:[[0.80,0.50],[0.25,0.70],[0.55,0.75]], opps:[[0.46,0.49],[0.62,0.32],[0.36,0.30]], gks:[[0.5,0.025],[0.5,0.975]] },
+    ball: [0.46,0.54],
+    options: ["Dribble straight through him", "Pass to the open teammate", "Shoot from here", "Kick it out of bounds"],
+    correct: 1, targetPos: [0.79,0.505], arcHeight: 4,
+    feedback: "Pass to the open teammate! When a defender commits to you and a teammate has space, move the ball. The ball travels faster than any player can run — let it do the work."
+  },
+  {
+    difficulty: "Beginner",
+    text: "You've broken into the box about 10 yards from goal. Only the goalkeeper is in front of you, and a defender is chasing from behind.",
+    players: { you:[0.53,0.11], mates:[[0.30,0.22]], opps:[[0.47,0.20]], gks:[[0.5,0.03],[0.5,0.975]] },
+    ball: [0.53,0.10],
+    options: ["Pass back to midfield", "Shoot low to a corner", "Wait for more teammates", "Dribble back out"],
+    correct: 1, targetPos: [0.462,0.0], arcHeight: 2,
+    feedback: "Shoot low to a corner! Low shots are the hardest for a keeper to reach — they have to get all the way down. Aim just inside the post and strike with your laces or the inside of your foot for accuracy."
+  },
+  {
+    difficulty: "Beginner",
+    text: "You're defending in your own half. An attacker is dribbling right at you. A teammate is sprinting back to help but is a few seconds away.",
+    players: { you:[0.50,0.73], mates:[[0.34,0.60],[0.75,0.80]], opps:[[0.50,0.65],[0.25,0.55]], gks:[[0.5,0.975],[0.5,0.025]] },
+    ball: [0.50,0.665],
+    options: ["Slide tackle right away", "Jockey: stay on your feet and delay", "Turn and run back to goal", "Grab his shirt"],
+    correct: 1, targetPos: [0.62,0.70], arcHeight: 2,
+    feedback: "Jockey and delay! Stand side-on, knees bent, an arm's length away, and slow him down. Diving in lets him skip past you; delaying buys time for help. When he takes a heavy touch, poke the ball away."
+  },
+  {
+    difficulty: "Beginner",
+    text: "A loose ball is bouncing in your own penalty box. Two attackers are closing in fast, and none of your teammates is open.",
+    players: { you:[0.45,0.90], mates:[[0.70,0.82]], opps:[[0.40,0.83],[0.56,0.86]], gks:[[0.5,0.975],[0.5,0.025]] },
+    ball: [0.45,0.885],
+    options: ["Dribble out past them", "Clear it high and wide", "Pass across the front of your goal", "Pick it up"],
+    correct: 1, targetPos: [0.04,0.60], arcHeight: 70,
+    feedback: "Clear it high and wide! In your own box under pressure, safety first. A big clearance toward the touchline removes the danger. Never pass across the front of your own goal — an interception there is a goal."
+  },
+  {
+    difficulty: "Beginner",
+    text: "The ball went out over the sideline, and it's your team's throw-in. Your teammate is open a few yards down the line.",
+    players: { you:[0.0,0.46], mates:[[0.14,0.40],[0.22,0.55]], opps:[[0.18,0.45],[0.30,0.36]], gks:[[0.5,0.025],[0.5,0.975]] },
+    ball: [0.0,0.455],
+    options: ["Throw it with one hand", "Both hands, from behind and over your head", "Kick it back in", "Jump as you throw"],
+    correct: 1, targetPos: [0.14,0.41], arcHeight: 22,
+    feedback: "Both hands, over your head! A legal throw-in uses both hands, starts from behind your head, and keeps part of both feet on the ground on or behind the line. Throw it to a teammate's feet so it's easy to control."
+  },
+  {
+    difficulty: "Beginner",
+    text: "You're receiving a pass with your back to the opponents' goal. A teammate shouts \"Man on!\" — a defender is right behind you.",
+    players: { you:[0.50,0.40], mates:[[0.36,0.56],[0.70,0.48]], opps:[[0.50,0.365],[0.65,0.30]], gks:[[0.5,0.025],[0.5,0.975]] },
+    ball: [0.50,0.42],
+    options: ["Try to spin past him", "Play it back to the open passer", "Stop it and shield forever", "Let it roll past you"],
+    correct: 1, targetPos: [0.37,0.55], arcHeight: 2,
+    feedback: "Play it back! \"Man on\" means there's no time to turn. A simple one- or two-touch lay-off to the teammate who's facing the field keeps possession — and they can play forward."
+  },
+  {
+    difficulty: "Beginner",
+    text: "You're a defender near your own corner. Your keeper rolls you the ball. An attacker is closing you down, but a midfielder is open up the sideline.",
+    players: { you:[0.12,0.86], mates:[[0.18,0.62],[0.50,0.70]], opps:[[0.22,0.80],[0.45,0.62]], gks:[[0.5,0.975],[0.5,0.025]] },
+    ball: [0.13,0.85],
+    options: ["Dribble across your own box", "Pass up the line to the midfielder", "Pass back across the goal", "Take on the attacker"],
+    correct: 1, targetPos: [0.18,0.635], arcHeight: 6,
+    feedback: "Pass up the line! Moving the ball forward along the touchline is safe — if it's intercepted, the danger is far from your goal. Keep the ball away from the middle of your own box."
+  },
+
+  // ── INTERMEDIATE ──────────────────────────────────────────────
+  {
+    difficulty: "Intermediate",
+    text: "You have the ball in midfield. The opponents' back line is high, and your striker is starting a run in behind them.",
+    players: { you:[0.50,0.52], mates:[[0.62,0.31],[0.25,0.45]], opps:[[0.34,0.30],[0.50,0.30],[0.70,0.30],[0.55,0.45]], gks:[[0.5,0.03],[0.5,0.975]] },
+    ball: [0.50,0.50],
+    runs: [[0.62,0.31,0.66,0.13]],
+    options: ["Square pass sideways", "Through ball into the space behind", "Shoot from 40 yards", "Dribble at the defenders"],
+    correct: 1, targetPos: [0.66,0.14], arcHeight: 5,
+    feedback: "Through ball into space! A high defensive line leaves room behind it. Pass into the space your striker is running toward — not to their feet — so they meet it at full speed. Time it so they're onside when you pass."
+  },
+  {
+    difficulty: "Intermediate",
+    text: "You're clean through, one-on-one. The goalkeeper is rushing off his line and is already very close to you.",
+    players: { you:[0.50,0.21], mates:[[0.30,0.35]], opps:[[0.55,0.33]], gks:[[0.50,0.15],[0.5,0.975]] },
+    ball: [0.50,0.20],
+    options: ["Blast it straight at him", "Chip it over him", "Stop and wait", "Pass backward"],
+    correct: 1, targetPos: [0.50,0.0], arcHeight: 42,
+    feedback: "Chip it! When the keeper charges out and is close, there's no angle to shoot past them — but there's plenty of room above. Get your toe under the ball and lift it gently over their head."
+  },
+  {
+    difficulty: "Intermediate",
+    text: "Your team has the ball on the left. Nearly all the opponents have shifted over to that side. Your right winger is all alone on the far side.",
+    players: { you:[0.30,0.46], mates:[[0.18,0.40],[0.40,0.30],[0.90,0.34]], opps:[[0.25,0.38],[0.36,0.36],[0.18,0.30],[0.44,0.32],[0.30,0.24]], gks:[[0.5,0.03],[0.5,0.975]] },
+    ball: [0.31,0.45],
+    options: ["Keep dribbling down the left", "Short pass to the left", "Switch the play to the right winger", "Shoot"],
+    correct: 2, targetPos: [0.89,0.345], arcHeight: 48,
+    feedback: "Switch the play! When the defense crowds one side, the other side is wide open. A long diagonal pass to the far winger lets you attack where they can't get across in time."
+  },
+  {
+    difficulty: "Intermediate",
+    text: "You're wide on the right near the goal line. Defenders are packed around the near post. A teammate is arriving unmarked at the far post.",
+    players: { you:[0.90,0.07], mates:[[0.38,0.09],[0.52,0.20]], opps:[[0.56,0.06],[0.61,0.11],[0.80,0.12]], gks:[[0.54,0.02],[0.5,0.975]] },
+    ball: [0.89,0.08],
+    runs: [[0.36,0.18,0.39,0.07]],
+    options: ["Shoot from the tight angle", "Cross to the far post", "Dribble back out", "Pass back to your fullback"],
+    correct: 1, targetPos: [0.395,0.065], arcHeight: 40,
+    feedback: "Cross to the far post! A shot from that tight angle rarely beats the keeper. A ball floated over the crowd at the near post finds your unmarked teammate with an open goal in front of them."
+  },
+  {
+    difficulty: "Intermediate",
+    text: "It's a 2-v-1. You're dribbling at the last defender with a teammate running alongside you. The defender steps toward you.",
+    players: { you:[0.42,0.31], mates:[[0.65,0.30]], opps:[[0.47,0.23],[0.40,0.50]], gks:[[0.5,0.03],[0.5,0.975]] },
+    ball: [0.42,0.29],
+    runs: [[0.65,0.30,0.66,0.18]],
+    options: ["Keep dribbling into him", "Pass to your teammate now", "Shoot from distance", "Stop and wait for support"],
+    correct: 1, targetPos: [0.66,0.19], arcHeight: 3,
+    feedback: "Pass now! The whole point of a 2-v-1 is to make the defender choose. The moment he commits to you, your teammate is free. Pass into their path and they're in on goal."
+  },
+  {
+    difficulty: "Intermediate",
+    text: "A teammate passes to you in midfield. You have lots of space — no defender within 10 yards — and open field ahead.",
+    players: { you:[0.50,0.56], mates:[[0.30,0.70],[0.72,0.40]], opps:[[0.50,0.38],[0.25,0.40],[0.75,0.30]], gks:[[0.5,0.03],[0.5,0.975]] },
+    ball: [0.36,0.66],
+    options: ["Pass it straight back first-time", "First touch forward into space", "Stop it dead and look", "Boot it long"],
+    correct: 1, targetPos: [0.50,0.47], arcHeight: 0,
+    feedback: "Touch it forward into space! With room in front, a first touch out of your feet and into the space lets you carry the ball at speed. Stopping it dead wastes the time your teammates gave you."
+  },
+  {
+    difficulty: "Intermediate",
+    text: "You're the goalkeeper. A defender, under pressure, deliberately kicks the ball back to you. An attacker is chasing it.",
+    players: { you:[0.50,0.965], mates:[[0.40,0.85],[0.15,0.70],[0.80,0.75]], opps:[[0.58,0.88],[0.45,0.70]], gks:[[0.5,0.03]] },
+    ball: [0.48,0.93],
+    options: ["Pick it up", "Clear it with your feet", "Let it go out for a corner", "Dribble past the attacker"],
+    correct: 1, targetPos: [0.10,0.60], arcHeight: 55,
+    feedback: "Clear it with your feet! A keeper can't handle a ball deliberately kicked to them by a teammate — picking it up gives the other team an indirect free kick inside your box. Play it safely wide."
+  },
+  {
+    difficulty: "Intermediate",
+    text: "Free kick to your team, about 20 yards out and straight in front of goal. The defense has built a wall.",
+    players: { you:[0.50,0.27], mates:[[0.38,0.20],[0.60,0.20]], opps:[[0.445,0.18],[0.48,0.18],[0.515,0.18],[0.62,0.12]], gks:[[0.55,0.02],[0.5,0.975]] },
+    ball: [0.50,0.255],
+    options: ["Blast it into the wall", "Curl it over the wall toward the open corner", "Roll it backward", "Take it before the whistle"],
+    correct: 1, targetPos: [0.455,0.0], arcHeight: 30,
+    feedback: "Curl it over the wall! The keeper usually covers one side and the wall covers the other. Bend it up and over the wall and down into the corner the keeper can't see well."
+  },
+  {
+    difficulty: "Intermediate",
+    text: "The opponents have a corner kick against you. You're marking their tallest striker in your box.",
+    players: { you:[0.47,0.915], mates:[[0.38,0.93],[0.58,0.93],[0.52,0.88]], opps:[[0.995,0.995],[0.46,0.90],[0.36,0.91],[0.60,0.91]], gks:[[0.5,0.985],[0.5,0.025]] },
+    ball: [0.99,0.99],
+    options: ["Watch only the ball", "Stay goal-side and tight to your player", "Run to the edge of the box", "Stand on the goal line"],
+    correct: 1, targetPos: [0.47,0.91], arcHeight: 45,
+    feedback: "Goal-side and tight! Stay between your player and the goal, touching distance away, so you can see both them and the ball. Attack the ball when it arrives — head it high, wide, and away."
+  },
+
+  // ── ADVANCED ──────────────────────────────────────────────────
+  {
+    difficulty: "Advanced",
+    text: "You're a center back. Their midfielder looks up to play a pass, and their striker is standing level with your back line.",
+    players: { you:[0.45,0.72], mates:[[0.25,0.72],[0.62,0.72],[0.82,0.72]], opps:[[0.50,0.55],[0.48,0.72],[0.80,0.60]], gks:[[0.5,0.975],[0.5,0.025]] },
+    ball: [0.50,0.565],
+    runs: [[0.48,0.72,0.50,0.86]],
+    options: ["Drop deep as he runs", "Step up together as the pass is played", "Turn and chase the striker", "Charge at the passer alone"],
+    correct: 1, targetPos: [0.50,0.86], arcHeight: 4,
+    feedback: "Step up together! If the whole back line moves forward in unison just as the pass is played, the striker is left in an offside position. It only works with communication — one defender lagging behind plays him onside."
+  },
+  {
+    difficulty: "Advanced",
+    text: "You're the striker, standing level with their last defender. Your midfielder has the ball and is about to pass.",
+    players: { you:[0.50,0.30], mates:[[0.45,0.50],[0.20,0.40]], opps:[[0.36,0.30],[0.62,0.30],[0.50,0.45]], gks:[[0.5,0.03],[0.5,0.975]] },
+    ball: [0.45,0.48],
+    runs: [[0.50,0.30,0.62,0.13]],
+    options: ["Sprint in behind before the pass", "Bend your run and go as the pass is played", "Stand still and wait", "Drop back to get the ball"],
+    correct: 1, targetPos: [0.62,0.14], arcHeight: 5,
+    feedback: "Bend your run and go on the pass! Curving your run keeps you level with the line until the ball is struck. Leave too early and you're offside; leave on the pass and you're in alone."
+  },
+  {
+    difficulty: "Advanced",
+    text: "Counterattack: you're carrying the ball through the middle with wingers on both sides. Two defenders are backpedaling.",
+    players: { you:[0.50,0.40], mates:[[0.18,0.36],[0.82,0.36]], opps:[[0.42,0.26],[0.60,0.26],[0.50,0.58]], gks:[[0.5,0.03],[0.5,0.975]] },
+    ball: [0.50,0.38],
+    runs: [[0.82,0.36,0.78,0.18]],
+    options: ["Pass wide right away", "Drive at the defenders to draw one, then release", "Shoot from 40 yards", "Slow down and wait"],
+    correct: 1, targetPos: [0.78,0.19], arcHeight: 4,
+    feedback: "Drive at them, then release! Running at the defenders forces one to step up to you. That's when the pass to the free winger kills them. Passing too early lets them shift across; too late and you're tackled."
+  },
+  {
+    difficulty: "Advanced",
+    text: "You're pressing high. Their center back receives a pass with his back to you and takes a heavy first touch toward his own goal.",
+    players: { you:[0.44,0.21], mates:[[0.70,0.25],[0.30,0.30]], opps:[[0.55,0.12],[0.85,0.18],[0.20,0.16]], gks:[[0.5,0.03],[0.5,0.975]] },
+    ball: [0.56,0.10],
+    runs: [[0.44,0.21,0.54,0.10]],
+    options: ["Hold your position", "Press now, curving to cut off the pass back to the keeper", "Foul him to stop it", "Drop back into midfield"],
+    correct: 1, targetPos: [0.55,0.115], arcHeight: 0,
+    feedback: "Press now! A bad touch facing his own goal is a classic pressing trigger. Curve your run so you block his easy pass back to the keeper, forcing him toward the sideline or into a mistake."
+  },
+  {
+    difficulty: "Advanced",
+    text: "You're the last defender, and it's a 2-v-1 against you. Your teammates are sprinting back but need a few seconds.",
+    players: { you:[0.50,0.76], mates:[[0.45,0.50],[0.70,0.55]], opps:[[0.42,0.62],[0.64,0.62]], gks:[[0.5,0.975],[0.5,0.025]] },
+    ball: [0.42,0.605],
+    options: ["Rush the ball carrier", "Delay — stay between them and back off slowly", "Mark only the player without the ball", "Turn and run to your goal"],
+    correct: 1, targetPos: [0.44,0.68], arcHeight: 2,
+    feedback: "Delay! Position yourself between the two attackers and backpedal under control. Make the ball carrier decide while you buy time for help. Commit too early and one pass beats you."
+  },
+  {
+    difficulty: "Advanced",
+    text: "It's the 89th minute and your team is winning 1–0. You have the ball deep in the opponents' corner with a defender on you.",
+    players: { you:[0.94,0.05], mates:[[0.70,0.20]], opps:[[0.90,0.09],[0.60,0.10]], gks:[[0.55,0.02],[0.5,0.975]] },
+    ball: [0.955,0.045],
+    options: ["Try a fancy shot", "Shield the ball near the corner flag", "Cross it to nobody", "Pass back to your keeper"],
+    correct: 1, targetPos: [0.985,0.015], arcHeight: 0,
+    feedback: "Shield it by the corner flag! Late in a game you're winning, the safest place for the ball is the far corner. Keep your body between the defender and the ball. Win a throw-in or corner and the clock keeps ticking."
+  },
+  {
+    difficulty: "Advanced",
+    text: "You're taking a penalty kick. You've already picked your spot. As you start your run-up, the keeper sways toward that side.",
+    players: { you:[0.50,0.14], mates:[[0.30,0.20],[0.70,0.20]], opps:[[0.40,0.20],[0.62,0.20]], gks:[[0.52,0.02],[0.5,0.975]] },
+    ball: [0.50,0.105],
+    options: ["Change your mind mid-run", "Stick with your spot and strike it firmly", "Stop your run-up completely", "Chip it down the middle"],
+    correct: 1, targetPos: [0.462,0.0], arcHeight: 3,
+    feedback: "Stick with your spot! Most missed penalties come from indecision. A firm, well-placed shot into the corner is almost unstoppable, even if the keeper guesses right. Commit before the run-up and don't look back."
+  },
+  {
+    difficulty: "Advanced",
+    text: "You're a midfielder. Your team just lost the ball in your attacking half, and their player is racing upfield. You're 15 yards behind the play.",
+    players: { you:[0.50,0.36], mates:[[0.32,0.73],[0.68,0.73],[0.25,0.40]], opps:[[0.47,0.50],[0.75,0.45],[0.25,0.55]], gks:[[0.5,0.975],[0.5,0.025]] },
+    ball: [0.47,0.52],
+    runs: [[0.50,0.36,0.50,0.64]],
+    options: ["Stop and complain to the ref", "Sprint back to get goal-side", "Walk back and save energy", "Foul him from behind"],
+    correct: 1, targetPos: [0.48,0.62], arcHeight: 1,
+    feedback: "Sprint back goal-side! Recover to a spot between the ball and your goal, then help your defenders. The first five seconds after losing the ball are the most dangerous — everyone works."
+  }
+];
+
+// ─── STATE ──────────────────────────────────────────────────────
+let current = null, answered = false;
+let score = 0, total = 0, streak = 0;
+let usedIndices = [], activeFilter = 'all';
+
+function setFilter(f) {
+  playClick();
+  activeFilter = f;
+  ['all','Beginner','Intermediate','Advanced'].forEach(k => {
+    document.getElementById('filter-' + k).className = 'filter-btn' + (k === f ? ' active-' + k : '');
+  });
+  usedIndices = [];
+  loadScenario();
+}
+
+function getPool() {
+  return activeFilter === 'all' ? scenarios : scenarios.filter(s => s.difficulty === activeFilter);
+}
+
+function pickScenario() {
+  const pool = getPool();
+  if (!pool.length) return null;
+  if (usedIndices.length >= pool.length) usedIndices = [];
+  let idx, attempts = 0;
+  do { idx = Math.floor(Math.random() * pool.length); attempts++; }
+  while (usedIndices.includes(idx) && attempts < 100);
+  usedIndices.push(idx);
+  return pool[idx];
+}
+
+// ─── PITCH DRAWING — perspective view ───────────────────────────
+// Screen corners: your goal line is near (bottom), theirs is far (top).
+const PERSP = {
+  NL: {x: 112, y: 382},
+  NR: {x: 598, y: 382},
+  FL: {x: 196, y: 30},
+  FR: {x: 514, y: 30},
+};
+
+function c2s(cx, cy) {
+  const t = 1 - cy;
+  const {NL, NR, FL, FR} = PERSP;
+  const lx = NL.x + t * (FL.x - NL.x);
+  const rx = NR.x + t * (FR.x - NR.x);
+  const sy = NL.y + t * (FL.y - NL.y);
+  return { x: lx + cx * (rx - lx), y: sy };
+}
+
+function fillQuad(ctx, cy0, cy1, cx0, cx1, color) {
+  const tl = c2s(cx0, cy0), tr = c2s(cx1, cy0);
+  const bl = c2s(cx0, cy1), br = c2s(cx1, cy1);
+  ctx.beginPath();
+  ctx.moveTo(tl.x, tl.y); ctx.lineTo(tr.x, tr.y);
+  ctx.lineTo(br.x, br.y); ctx.lineTo(bl.x, bl.y);
+  ctx.closePath();
+  ctx.fillStyle = color; ctx.fill();
+}
+
+function rectLine(ctx, cx0, cy0, cx1, cy1) {
+  const pts = [c2s(cx0,cy0), c2s(cx1,cy0), c2s(cx1,cy1), c2s(cx0,cy1)];
+  ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+  pts.forEach(p => ctx.lineTo(p.x, p.y)); ctx.closePath(); ctx.stroke();
+}
+
+// circle/arc in metres, mapped through the perspective; keep() filters points
+function fieldArc(ctx, ccx, ccy, rMetres, a0, a1, keep) {
+  const rx = rMetres / 68, ry = rMetres / 105;
+  ctx.beginPath();
+  let started = false;
+  for (let i = 0; i <= 64; i++) {
+    const a = a0 + (a1 - a0) * i / 64;
+    const px = ccx + rx * Math.cos(a), py = ccy + ry * Math.sin(a);
+    if (keep && !keep(px, py)) { started = false; continue; }
+    const s = c2s(px, py);
+    if (!started) { ctx.moveTo(s.x, s.y); started = true; } else ctx.lineTo(s.x, s.y);
+  }
+  ctx.stroke();
+}
+
+const BOX_W = 40.32 / 68, BOX_D = 16.5 / 105;
+const SIX_W = 18.32 / 68, SIX_D = 5.5 / 105;
+const GOAL_W = 7.32 / 68, SPOT = 11 / 105;
+
+function drawGoal(ctx, cy, near) {
+  const L = c2s(0.5 - GOAL_W / 2, cy), R = c2s(0.5 + GOAL_W / 2, cy);
+  const H = near ? 30 : 16;
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  ctx.fillRect(L.x, L.y - H, R.x - L.x, H);
+  ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 0.6;
+  for (let x = L.x + 5; x < R.x; x += 5) { ctx.beginPath(); ctx.moveTo(x, L.y - H); ctx.lineTo(x, L.y); ctx.stroke(); }
+  for (let y = L.y - H + 5; y < L.y; y += 5) { ctx.beginPath(); ctx.moveTo(L.x, y); ctx.lineTo(R.x, y); ctx.stroke(); }
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = near ? 3.5 : 2.5;
+  ctx.beginPath(); ctx.moveTo(L.x, L.y); ctx.lineTo(L.x, L.y - H); ctx.lineTo(R.x, R.y - H); ctx.lineTo(R.x, R.y); ctx.stroke();
+}
+
+function drawPitch(scenario, ballOverride) {
+  const canvas = document.getElementById('pitch');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // ── 1. Grass with mowing stripes ─────────────────────────────
+  fillQuad(ctx, -0.03, 1.03, -0.04, 1.04, '#2a5e25');
+  for (let i = 0; i < 12; i++) {
+    fillQuad(ctx, i / 12, (i + 1) / 12, 0, 1, i % 2 ? '#3f7a34' : '#468538');
+  }
+  fillQuad(ctx, 0, 0.22, -0.04, 1.04, 'rgba(0,0,0,0.12)');   // far-end depth shading
+
+  // ── 2. Markings ──────────────────────────────────────────────
+  ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.lineWidth = 2;
+  rectLine(ctx, 0, 0, 1, 1);
+  const hL = c2s(0, 0.5), hR = c2s(1, 0.5);
+  ctx.beginPath(); ctx.moveTo(hL.x, hL.y); ctx.lineTo(hR.x, hR.y); ctx.stroke();
+  ctx.lineWidth = 1.6;
+  fieldArc(ctx, 0.5, 0.5, 9.15, 0, Math.PI * 2);
+  rectLine(ctx, 0.5 - BOX_W / 2, 0, 0.5 + BOX_W / 2, BOX_D);
+  rectLine(ctx, 0.5 - BOX_W / 2, 1 - BOX_D, 0.5 + BOX_W / 2, 1);
+  rectLine(ctx, 0.5 - SIX_W / 2, 0, 0.5 + SIX_W / 2, SIX_D);
+  rectLine(ctx, 0.5 - SIX_W / 2, 1 - SIX_D, 0.5 + SIX_W / 2, 1);
+  fieldArc(ctx, 0.5, SPOT, 9.15, 0, Math.PI * 2, (x, y) => y >= BOX_D);
+  fieldArc(ctx, 0.5, 1 - SPOT, 9.15, 0, Math.PI * 2, (x, y) => y <= 1 - BOX_D);
+  [[0,0],[1,0],[0,1],[1,1]].forEach(([x, y]) =>
+    fieldArc(ctx, x, y, 1, 0, Math.PI * 2, (px, py) => px >= 0 && px <= 1 && py >= 0 && py <= 1));
+  ctx.fillStyle = '#fff';
+  [[0.5, 0.5], [0.5, SPOT], [0.5, 1 - SPOT]].forEach(([x, y]) => {
+    const s = c2s(x, y); ctx.beginPath(); ctx.arc(s.x, s.y, 2, 0, Math.PI * 2); ctx.fill();
+  });
+
+  drawGoal(ctx, 0, false);
+
+  // ── 3. Annotations with dotted leader lines ──────────────────
+  const annotate = (text, targetCx, targetCy, side) => {
+    const target = c2s(targetCx, targetCy);
+    const labelX = side === 'left' ? 96 : 614;
+    ctx.save();
+    ctx.setLineDash([3, 5]);
+    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+    ctx.lineWidth = 1.1;
+    ctx.beginPath();
+    ctx.moveTo(labelX + (side === 'left' ? 4 : -4), target.y);
+    ctx.lineTo(target.x, target.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.beginPath(); ctx.arc(target.x, target.y, 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.75)'; ctx.fill();
+    ctx.font = 'bold 11px Segoe UI';
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = side === 'left' ? 'right' : 'left';
+    ctx.fillText(text, labelX, target.y + 4);
+    ctx.restore();
+  };
+  annotate('Their Goal',   0, 0.0,           'left');
+  annotate('Halfway Line', 0, 0.5,           'left');
+  annotate('Your Goal',    0, 1.0,           'left');
+  annotate('Penalty Box',  0.5 + BOX_W / 2, BOX_D / 2, 'right');
+  annotate('Touchline',    1, 0.32,          'right');
+  annotate('Center Circle', 0.5 + 9.15 / 68, 0.5, 'right');
+
+  // ── 4. Run arrows ────────────────────────────────────────────
+  (scenario.runs || []).forEach(([x1, y1, x2, y2]) => {
+    const a = c2s(x1, y1), b = c2s(x2, y2);
+    ctx.save();
+    ctx.setLineDash([5, 4]);
+    ctx.strokeStyle = 'rgba(250,204,21,0.9)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    ctx.setLineDash([]);
+    const ang = Math.atan2(b.y - a.y, b.x - a.x);
+    ctx.fillStyle = 'rgba(250,204,21,0.95)';
+    ctx.beginPath();
+    ctx.moveTo(b.x, b.y);
+    ctx.lineTo(b.x - 9 * Math.cos(ang - 0.45), b.y - 9 * Math.sin(ang - 0.45));
+    ctx.lineTo(b.x - 9 * Math.cos(ang + 0.45), b.y - 9 * Math.sin(ang + 0.45));
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  });
+
+  // ── 5. Players (far first) & ball ────────────────────────────
+  const drawDot = (cx, cy, color, label) => {
+    const s = c2s(cx, cy);
+    const r  = 6 + cy * 5;
+    const fs = 6 + cy * 3;
+    ctx.beginPath(); ctx.arc(s.x, s.y, r, 0, Math.PI * 2);
+    ctx.fillStyle = color; ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${fs.toFixed(0)}px Segoe UI`;
+    ctx.textAlign = 'center';
+    ctx.fillText(label, s.x, s.y + fs * 0.38);
+  };
+
+  const p = scenario.players;
+  const list = [];
+  (p.gks   || []).forEach(q => list.push([q, '#a855f7', 'GK']));
+  (p.opps  || []).forEach(q => list.push([q, '#dc2626', 'OPP']));
+  (p.mates || []).forEach(q => list.push([q, '#f97316', 'TM']));
+  list.push([p.you, '#2563eb', 'YOU']);
+  list.sort((a, b) => a[0][1] - b[0][1]).forEach(([q, c, l]) => drawDot(q[0], q[1], c, l));
+
+  const bCx = ballOverride ? ballOverride.cx : scenario.ball[0];
+  const bCy = ballOverride ? ballOverride.cy : scenario.ball[1];
+  const arcOff = ballOverride ? (ballOverride.arcOff || 0) : 0;
+  const bs = c2s(bCx, bCy);
+  const br = 3.5 + bCy * 3;
+  if (arcOff > 3) {
+    ctx.beginPath();
+    ctx.ellipse(bs.x, bs.y, br * 0.9, br * 0.38, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fill();
+  }
+  ctx.beginPath(); ctx.arc(bs.x, bs.y - arcOff, br, 0, Math.PI * 2);
+  ctx.fillStyle = '#fff'; ctx.fill();
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.beginPath(); ctx.arc(bs.x, bs.y - arcOff, br * 0.38, 0, Math.PI * 2);
+  ctx.fillStyle = '#111'; ctx.fill();
+}
+
+// ─── BALL ANIMATION ─────────────────────────────────────────────
+let animFrame = null;
+
+function animateBall(scenario) {
+  if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+  const start = scenario.ball;
+  const target = scenario.targetPos || start;
+  const arcH   = scenario.arcHeight || 0;
+  const duration = 800;
+  const t0 = performance.now();
+
+  function step(now) {
+    const raw = Math.min((now - t0) / duration, 1);
+    const e   = raw < 0.5 ? 2*raw*raw : -1 + (4 - 2*raw)*raw; // ease-in-out
+    const cx  = start[0] + e * (target[0] - start[0]);
+    const cy  = start[1] + e * (target[1] - start[1]);
+    const arc = arcH * 4 * raw * (1 - raw);
+    drawPitch(scenario, { cx, cy, arcOff: arc });
+    if (raw < 1) animFrame = requestAnimationFrame(step);
+    else animFrame = null;
+  }
+  animFrame = requestAnimationFrame(step);
+}
+
+// ─── GAME LOGIC ─────────────────────────────────────────────────
+function loadScenario() {
+  if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+  current = pickScenario();
+  if (!current) {
+    document.getElementById('scenario-text').textContent = 'No scenarios for this filter. Try another level!';
+    document.getElementById('options').innerHTML = '';
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('next-btn').style.display = 'none';
+    return;
+  }
+  answered = false;
+  drawPitch(current);
+
+  document.getElementById('scenario-text').textContent = current.text;
+  const badge = document.getElementById('diff-badge');
+  badge.textContent = current.difficulty;
+  badge.className = 'difficulty-badge d-' + current.difficulty;
+
+  document.getElementById('feedback').textContent = 'Choose the best play above.';
+  document.getElementById('feedback').className = 'feedback-box';
+  document.getElementById('next-btn').style.display = 'none';
+
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+  current.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'shot-btn';
+    btn.textContent = opt;
+    btn.onclick = () => handleAnswer(i);
+    opts.appendChild(btn);
+  });
+}
+
+function handleAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  total++;
+
+  const btns = document.querySelectorAll('.shot-btn');
+  btns.forEach(b => b.disabled = true);
+
+  const fb = document.getElementById('feedback');
+  if (idx === current.correct) {
+    score++; streak++;
+    btns[idx].classList.add('correct');
+    fb.textContent = '✓ Correct! ' + current.feedback;
+    fb.className = 'feedback-box correct';
+    playCorrect();
+  } else {
+    streak = 0;
+    btns[idx].classList.add('wrong');
+    btns[current.correct].classList.add('reveal');
+    fb.textContent = '✗ Not quite. ' + current.feedback;
+    fb.className = 'feedback-box wrong';
+    playWrong();
+  }
+
+  document.getElementById('score').textContent = score;
+  document.getElementById('total').textContent = total;
+  document.getElementById('streak').textContent = streak;
+  document.getElementById('pct').textContent = total > 0 ? Math.round(score/total*100) + '%' : '—';
+  document.getElementById('next-btn').style.display = 'block';
+
+  setTimeout(() => animateBall(current), 350);
+}
+
+function nextScenario() { playClick(); loadScenario(); }
+
+loadScenario();
+</script>
+  <footer style="margin-top:48px;font-size:12px;color:#888;letter-spacing:1px;text-align:center;">Soccer &mdash; Decision Trainer<br><span style="color:#aaa;font-size:12px;letter-spacing:1px;">Content generated with AI assistance &mdash; verify tips with a qualified coach.</span></footer>
+  <script>
+    document.querySelector('.nav-toggle').addEventListener('click', () => {
+      document.querySelector('.nav-links').classList.toggle('open');
+    });
+  </script>
+</body>
+</html>

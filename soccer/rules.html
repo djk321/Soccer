@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rules — Soccer Hub</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #eee; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 76px 16px 40px; }
+
+    nav { position: fixed; top: 0; width: 100%; background: #1a1a24; padding: 16px 40px; display: flex; gap: 28px; justify-content: center; border-bottom: 1px solid #2a2a3a; z-index: 100; flex-wrap: wrap; }
+    nav a { color: #c9a84c; text-decoration: none; font-size: 0.92rem; font-weight: 600; letter-spacing: 0.05em; transition: color 0.2s; }
+    nav a:hover { color: #ffffff; }
+    nav a.active { color: #ffffff; border-bottom: 2px solid #7dd3fc; padding-bottom: 2px; }
+    .nav-toggle { display: none; background: none; border: none; color: #c9a84c; font-size: 1.5rem; cursor: pointer; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); }
+    .nav-links { display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; }
+    @media (max-width: 640px) {
+      nav { flex-direction: column; align-items: flex-start; padding: 14px 20px; gap: 0; position: relative; }
+      .nav-toggle { display: block; }
+      .nav-links { display: none; flex-direction: column; gap: 14px; padding: 14px 0 6px; width: 100%; }
+      .nav-links.open { display: flex; }
+    }
+
+    header { text-align: center; margin: 24px 0 32px; }
+    header h1 { font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #e8d5a3, #c9a84c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    header p { margin-top: 8px; font-size: 13px; color: #666; letter-spacing: 2px; text-transform: uppercase; }
+
+    .rules-container { width: 100%; max-width: 860px; display: flex; flex-direction: column; gap: 32px; }
+
+    .rule-section { background: #131c2e; border: 1px solid #1e2a3a; border-radius: 12px; padding: 24px 28px; }
+    .rule-section h2 { font-size: 1.05rem; font-weight: 700; color: #fbbf24; margin-bottom: 16px; letter-spacing: 0.04em; text-transform: uppercase; }
+
+    .rule-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .rule-list li { font-size: 0.875rem; color: #cbd5e1; line-height: 1.6; padding-left: 18px; position: relative; }
+    .rule-list li::before { content: '▸'; position: absolute; left: 0; color: #c9a84c; font-size: 0.75rem; top: 2px; }
+
+    .highlight { color: #e8d5a3; font-weight: 600; }
+
+    .card-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+    .ref-card { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #0f172a; border: 1px solid #1e2a3a; border-radius: 10px; font-size: 0.82rem; color: #cbd5e1; }
+    .ref-card i { display: inline-block; width: 18px; height: 26px; border-radius: 3px; box-shadow: 0 2px 6px rgba(0,0,0,0.5); }
+    .ref-card i.y { background: #facc15; }
+    .ref-card i.r { background: #dc2626; }
+
+    footer { margin-top: 48px; font-size: 12px; color: #888; letter-spacing: 1px; text-align: center; }
+  </style>
+</head>
+<body>
+  <nav>
+    <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+    <div class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../about.html">About</a>
+      <a href="why-soccer.html">Why Soccer</a>
+      <a href="rules.html" class="active">Rules</a>
+      <a href="trainer.html">Training</a>
+      <a href="drills.html">Drills</a>
+      <a href="fair-play.html">Fair Play</a>
+      <a href="helpful-terms.html">Helpful Terms</a>
+      <a href="coach.html">Ask the Coach</a>
+    </div>
+  </nav>
+
+  <header>
+    <h1>📋 Rules</h1>
+    <p>The Laws of the Game in plain English</p>
+  </header>
+
+  <div class="rules-container">
+
+    <div class="rule-section">
+      <h2>The Basics</h2>
+      <ul class="rule-list">
+        <li>Two teams of <span class="highlight">11 players</span> each (including one goalkeeper). A match can't start or continue if a team has fewer than <span class="highlight">7</span>.</li>
+        <li>A full match is <span class="highlight">two 45-minute halves</span> with a half-time break. The referee adds <span class="highlight">stoppage time</span> for injuries, substitutions, and time-wasting.</li>
+        <li>Score by getting the <span class="highlight">whole ball over the goal line</span> between the posts and under the crossbar. The team with more goals wins; a tie is a draw unless the competition needs extra time or penalties.</li>
+        <li>Only the goalkeeper may handle the ball — and only inside their own <span class="highlight">penalty area</span>.</li>
+        <li>Adult matches use a <span class="highlight">size 5</span> ball. Youth leagues use smaller balls (size 3 or 4) and smaller teams, fields, and goals.</li>
+        <li>Shin guards are required. Jewelry is not allowed.</li>
+      </ul>
+    </div>
+
+    <div class="rule-section">
+      <h2>Ball In &amp; Out of Play</h2>
+      <ul class="rule-list">
+        <li>The ball is out only when the <span class="highlight">whole ball</span> has crossed the touchline or goal line — on the ground or in the air. If any part of it is on the line, it's still in.</li>
+        <li>Over the <span class="highlight">touchline</span> (side) → a throw-in to the team that didn't touch it last.</li>
+        <li>Over the <span class="highlight">goal line</span> (end), last touched by the attackers → a goal kick. Last touched by the defenders → a corner kick.</li>
+        <li>The ball stays in play if it bounces off the referee, a post, the crossbar, or a corner flag and stays on the field.</li>
+      </ul>
+    </div>
+
+    <div class="rule-section">
+      <h2>Offside</h2>
+      <ul class="rule-list">
+        <li>You're in an <span class="highlight">offside position</span> if, when a teammate plays the ball to you, you're in the opponents' half and closer to their goal line than <span class="highlight">both the ball and the second-to-last defender</span> (the goalkeeper usually counts as one).</li>
+        <li>Being <span class="highlight">level</span> with the second-to-last defender — or level with the ball — is <span class="highlight">onside</span>.</li>
+        <li>Being in an offside position isn't an offence by itself. It's only called if you become <span class="highlight">involved in active play</span>: playing the ball, blocking the keeper's view, or challenging an opponent for it.</li>
+        <li>You <span class="highlight">can't be offside</span> in your own half, or directly from a <span class="highlight">throw-in, goal kick, or corner kick</span>.</li>
+        <li>What counts is where you were <span class="highlight">when the ball was played</span>, not where you are when you receive it.</li>
+        <li>Penalty: an indirect free kick to the defending team from where the offence happened.</li>
+      </ul>
+    </div>
+
+    <div class="rule-section">
+      <h2>Fouls &amp; Misconduct</h2>
+      <ul class="rule-list">
+        <li><span class="highlight">Direct free kick</span> fouls (you can score straight from the kick): kicking, tripping, pushing, charging, striking, or jumping at an opponent carelessly, recklessly, or with excessive force; holding; tackling the player instead of the ball; and deliberate handball.</li>
+        <li>A direct-free-kick foul by a defender <span class="highlight">inside their own penalty area</span> is a <span class="highlight">penalty kick</span>.</li>
+        <li><span class="highlight">Indirect free kick</span> offences (someone else must touch it before a goal counts): dangerous play (e.g. a high kick near someone's head), impeding an opponent without contact, offside, and certain goalkeeper offences.</li>
+        <li><span class="highlight">Advantage:</span> if stopping play would hurt the team that was fouled, the referee may wave "play on" — and can still show a card at the next stoppage.</li>
+      </ul>
+      <div class="card-row">
+        <div class="ref-card"><i class="y"></i><span><b>Yellow card</b> — a caution: reckless fouls, dissent, delaying the restart, not retreating 10 yards, unsporting behavior.</span></div>
+        <div class="ref-card"><i class="r"></i><span><b>Red card</b> — sent off, team plays short: serious foul play, violent conduct, spitting, denying an obvious goal-scoring chance, abusive language, or a <b>second yellow</b>.</span></div>
+      </div>
+    </div>
+
+    <div class="rule-section">
+      <h2>Handball</h2>
+      <ul class="rule-list">
+        <li>The "arm" starts at the <span class="highlight">bottom of the armpit</span> — the shoulder is fair game.</li>
+        <li>It's handball if you <span class="highlight">deliberately</span> touch the ball with your hand or arm, or if your arm makes your body <span class="highlight">unnaturally bigger</span> and the ball hits it.</li>
+        <li>An attacker can't score directly with their hand or arm, even accidentally.</li>
+        <li>A ball that hits an arm held close to the body, or an arm supporting a player as they fall, usually is <span class="highlight">not</span> handball.</li>
+      </ul>
+    </div>
+
+    <div class="rule-section">
+      <h2>Free Kicks &amp; Penalties</h2>
+      <ul class="rule-list">
+        <li>On any free kick, opponents must stand at least <span class="highlight">10 yards (9.15 m)</span> away until the ball is kicked and clearly moves.</li>
+        <li>On a direct free kick, a defensive wall of three or more players means attackers must stay <span class="highlight">at least 1 yard</span> from the wall.</li>
+        <li>A <span class="highlight">penalty kick</span> is taken from the spot <span class="highlight">12 yards (11 m)</span> from goal. Everyone except the kicker and keeper stays outside the box and the arc.</li>
+        <li>On a penalty, the goalkeeper must stay on the goal line between the posts until the kick, with at least part of one foot <span class="highlight">touching or in line with the line</span>.</li>
+        <li>The kicker can't touch the ball again until another player touches it — no tapping in your own rebound off the post.</li>
+      </ul>
+    </div>
+
+    <div class="rule-section">
+      <h2>Throw-ins, Goal Kicks &amp; Corners</h2>
+      <ul class="rule-list">
+        <li><span class="highlight">Throw-in:</span> face the field, use <span class="highlight">both hands</span>, deliver from <span class="highlight">behind and over your head</span>, with part of each foot on the touchline or the ground outside it. A bad throw goes to the other team.</li>
+        <li>You can't score directly from a throw-in, and the thrower can't touch it again until someone else does.</li>
+        <li><span class="highlight">Goal kick:</span> taken from anywhere in the goal area. The ball is in play as soon as it's kicked and clearly moves — it doesn't have to leave the penalty area.</li>
+        <li><span class="highlight">Corner kick:</span> taken from inside the corner arc nearest where the ball went out. You <span class="highlight">can</span> score directly from a corner.</li>
+        <li><span class="highlight">Kick-off:</span> starts each half and restarts play after a goal. The ball goes in any direction, and you can score directly from it.</li>
+      </ul>
+    </div>
+
+    <div class="rule-section">
+      <h2>The Goalkeeper</h2>
+      <ul class="rule-list">
+        <li>The keeper may handle the ball <span class="highlight">only inside their own penalty area</span>. Outside it, they're a field player.</li>
+        <li>The keeper <span class="highlight">can't pick up</span> a ball deliberately kicked to them by a teammate (a "back-pass"), or one thrown directly to them from a teammate's throw-in. Heading or chesting it back is fine.</li>
+        <li>Once the keeper has the ball in their hands, they have <span class="highlight">8 seconds</span> to release it. Holding it longer gives the other team a <span class="highlight">corner kick</span>.</li>
+        <li>Opponents can't challenge a keeper who has control of the ball in their hands.</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <footer>Soccer &mdash; Rules<br><span style="color:#aaa;font-size:12px;letter-spacing:1px;">Content generated with AI assistance &mdash; summarized from the IFAB Laws of the Game; local and youth leagues often modify these rules.</span></footer>
+  <script>
+    document.querySelector('.nav-toggle').addEventListener('click', () => {
+      document.querySelector('.nav-links').classList.toggle('open');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ask the Coach — Soccer Hub</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: #eee; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 76px 16px 40px; }
+
+    nav { position: fixed; top: 0; width: 100%; background: #1a1a24; padding: 16px 40px; display: flex; gap: 28px; justify-content: center; border-bottom: 1px solid #2a2a3a; z-index: 100; flex-wrap: wrap; }
+    nav a { color: #c9a84c; text-decoration: none; font-size: 0.92rem; font-weight: 600; letter-spacing: 0.05em; transition: color 0.2s; }
+    nav a:hover { color: #ffffff; }
+    nav a.active { color: #ffffff; border-bottom: 2px solid #7dd3fc; padding-bottom: 2px; }
+    .nav-toggle { display: none; background: none; border: none; color: #c9a84c; font-size: 1.5rem; cursor: pointer; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); }
+    .nav-links { display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; }
+    @media (max-width: 640px) {
+      nav { flex-direction: column; align-items: flex-start; padding: 14px 20px; gap: 0; position: relative; }
+      .nav-toggle { display: block; }
+      .nav-links { display: none; flex-direction: column; gap: 14px; padding: 14px 0 6px; width: 100%; }
+      .nav-links.open { display: flex; }
+    }
+
+    header { text-align: center; margin: 24px 0 24px; }
+    header h1 { font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #e8d5a3, #c9a84c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    header p { margin-top: 8px; font-size: 13px; color: #666; letter-spacing: 2px; text-transform: uppercase; }
+
+    .chat-wrap { width: 100%; max-width: 720px; display: flex; flex-direction: column; gap: 16px; }
+
+    .chat-window {
+      background: #131c2e; border: 1px solid #1e2a3a; border-radius: 16px;
+      padding: 20px; height: 60vh; min-height: 360px; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth;
+    }
+    .chat-window::-webkit-scrollbar { width: 8px; }
+    .chat-window::-webkit-scrollbar-thumb { background: #2a3a52; border-radius: 8px; }
+
+    .msg { max-width: 85%; padding: 12px 16px; border-radius: 14px; font-size: 0.9rem; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; }
+    .msg.bot { align-self: flex-start; background: #1e293b; border: 1px solid #2a3a52; border-bottom-left-radius: 4px; }
+    .msg.user { align-self: flex-end; background: linear-gradient(135deg, #c9a84c, #b08f3a); color: #1a1208; font-weight: 500; border-bottom-right-radius: 4px; }
+    .msg .src { display: block; margin-top: 8px; font-size: 0.78rem; }
+    .msg .src a { color: #7dd3fc; text-decoration: none; }
+    .msg .src a:hover { text-decoration: underline; }
+    .msg b, .msg strong { color: #e8d5a3; }
+    .msg.user b, .msg.user strong { color: #1a1208; }
+
+    .typing { align-self: flex-start; color: #94a3b8; font-size: 0.85rem; font-style: italic; padding: 4px 8px; }
+    .typing span { animation: blink 1.2s infinite; }
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes blink { 0%, 60%, 100% { opacity: 0.2; } 30% { opacity: 1; } }
+
+    .related { align-self: flex-start; max-width: 92%; display: flex; flex-wrap: wrap; gap: 7px; margin-top: -4px; }
+    .related .rlabel { width: 100%; font-size: 0.72rem; color: #7c8aa0; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
+
+    .suggestions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.3); color: #e8d5a3;
+      padding: 7px 13px; border-radius: 20px; font-size: 0.8rem; cursor: pointer;
+      transition: background 0.18s, border-color 0.18s;
+    }
+    .related .chip { font-size: 0.78rem; padding: 6px 11px; }
+    .chip:hover { background: rgba(201,168,76,0.22); border-color: #c9a84c; }
+
+    .input-row { display: flex; gap: 10px; }
+    .input-row input {
+      flex: 1; background: #1e293b; border: 1px solid #2a3a52; color: #eee;
+      padding: 13px 16px; border-radius: 12px; font-size: 0.92rem; font-family: inherit;
+    }
+    .input-row input:focus { outline: none; border-color: #c9a84c; }
+    .input-row button {
+      background: linear-gradient(135deg, #c9a84c, #b08f3a); color: #1a1208; font-weight: 700;
+      border: none; padding: 0 22px; border-radius: 12px; cursor: pointer; font-size: 0.92rem;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .input-row button:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(201,168,76,0.25); }
+    .input-row button:active { transform: translateY(0); }
+
+    .disclaimer { font-size: 11px; color: #64748b; text-align: center; line-height: 1.5; }
+    footer { margin-top: 40px; font-size: 12px; color: #888; letter-spacing: 1px; text-align: center; }
+  </style>
+</head>
+<body>
+  <nav>
+    <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+    <div class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../about.html">About</a>
+      <a href="why-soccer.html">Why Soccer</a>
+      <a href="rules.html">Rules</a>
+      <a href="trainer.html">Training</a>
+      <a href="drills.html">Drills</a>
+      <a href="fair-play.html">Fair Play</a>
+      <a href="helpful-terms.html">Helpful Terms</a>
+      <a href="coach.html" class="active">Ask the Coach</a>
+    </div>
+  </nav>
+
+  <header>
+    <h1>💬 Ask the Coach</h1>
+    <p>Your soccer questions, answered</p>
+  </header>
+
+  <div class="chat-wrap">
+    <div class="chat-window" id="chat"></div>
+
+    <div class="suggestions" id="suggestions"></div>
+
+    <div class="input-row">
+      <input type="text" id="userInput" placeholder="Ask a soccer question…" autocomplete="off">
+      <button id="sendBtn">Send</button>
+    </div>
+
+    <p class="disclaimer">This coach answers from a built-in soccer knowledge base — no internet or AI service required.
+      For anything it can't answer, try the <a href="rules.html" style="color:#7dd3fc;text-decoration:none;">Rules</a> or
+      <a href="helpful-terms.html" style="color:#7dd3fc;text-decoration:none;">Helpful Terms</a> pages.</p>
+  </div>
+
+  <footer>© 2026 Dan Keller — Soccer Hub</footer>
+
+  <script>
+    document.querySelector('.nav-toggle').addEventListener('click', () => {
+      document.querySelector('.nav-links').classList.toggle('open');
+    });
+  </script>
+
+  <script>
+    /* ===========================================================
+       Ask the Coach — built-in soccer knowledge base.
+       Each entry: { cat, q (canonical question), keys (match terms),
+       a (answer HTML), src ([label, page] or null) }.
+       Matching uses synonym expansion + light stemming + keyword
+       overlap, returns the best answer plus related questions.
+       To add a Q&A: copy an entry and fill in the fields.
+       =========================================================== */
+    const RULES = ["Rules","rules.html"], DRILLS = ["Drills","drills.html"],
+          FAIR = ["Fair Play","fair-play.html"], TERMS = ["Helpful Terms","helpful-terms.html"],
+          WHY = ["Why Soccer","why-soccer.html"], TRAIN = ["Decision Trainer","trainer.html"];
+
+    const KB = [
+      /* ---------- BASICS ---------- */
+      {cat:"Basics", q:"How do you play soccer?", keys:["how do you play","how to play","basic rules","rules of soccer","what is soccer","how does soccer work"], a:"Two teams of <b>11 players</b> (including a goalkeeper) try to get the ball into the other team's goal without using their hands or arms. Only the keeper can handle the ball, and only inside their own penalty area. Most goals wins.", src:RULES},
+      {cat:"Basics", q:"How long is a soccer game?", keys:["how long","game length","match length","how many minutes","halves","half time","how long is a half"], a:"A full match is <b>two 45-minute halves</b> with a break (usually 15 minutes) in between. The referee adds <b>stoppage time</b> at the end of each half. Youth games are shorter — often 25–35 minute halves depending on age.", src:RULES},
+      {cat:"Basics", q:"How many players are on a team?", keys:["how many players","players on a team","team size","11 players","eleven players","how many on the field"], a:"<b>11 per side</b>, including the goalkeeper. A team needs at least <b>7</b> to start or continue. Youth and rec leagues often play small-sided: 4v4, 7v7, or 9v9.", src:RULES},
+      {cat:"Basics", q:"When is the ball out of play?", keys:["ball out","out of bounds","when is it out","ball on the line","in or out","out of play"], a:"Only when the <b>whole ball</b> has crossed the touchline or goal line, on the ground or in the air. If any part of the ball is on the line, it's still in play.", src:RULES},
+      {cat:"Basics", q:"What counts as a goal?", keys:["what counts as a goal","is it a goal","how do you score","ball over the line","goal line"], a:"A goal is scored when the <b>whole ball crosses the goal line</b> between the posts and under the crossbar — and the attacking team didn't commit a foul or handball along the way.", src:RULES},
+      {cat:"Basics", q:"What happens if the game ends in a tie?", keys:["tie","draw","ends in a tie","extra time","overtime","penalty shootout","shootout"], a:"In league play a tie is simply a <b>draw</b>. In knockout games the match may go to <b>extra time</b> (two 15-minute periods) and then a <b>penalty shootout</b> — five kicks each, then sudden death.", src:RULES},
+      {cat:"Basics", q:"How do substitutions work?", keys:["substitution","subs","substitute","how many subs","rolling subs","replace a player"], a:"Professional competitions usually allow <b>up to five substitutions</b>, and a player who comes off can't return. Many youth and rec leagues use <b>rolling (unlimited) subs</b> at stoppages. Check your league's rules.", src:RULES},
+
+      /* ---------- OFFSIDE ---------- */
+      {cat:"Offside", q:"What is offside?", keys:["offside","offsides","what is offside","offside rule","explain offside"], a:"You're <b>offside</b> if, when a teammate passes to you, you're in the opponents' half and <b>closer to their goal line than both the ball and the second-to-last defender</b> — and you then get involved in play. It stops attackers from just camping by the goal.", src:RULES},
+      {cat:"Offside", q:"Is level with the defender offside?", keys:["level","even with","in line with","level with the defender","same line"], a:"No — <b>level is onside</b>. You must be clearly ahead of both the second-to-last defender and the ball to be in an offside position.", src:RULES},
+      {cat:"Offside", q:"When can't you be offside?", keys:["cant be offside","be offside from","offside in my own half","in my own half","from a throw in","from a corner","from a goal kick","behind the ball"], a:"You can't be offside in <b>your own half</b>, or directly from a <b>throw-in, goal kick, or corner kick</b>. You also can't be offside if you're behind the ball when it's played.", src:RULES},
+      {cat:"Offside", q:"Is being in an offside position always a foul?", keys:["offside position","not involved","passive offside","standing offside","interfering"], a:"No. Being in an offside position isn't an offence by itself. It's only called if you get <b>involved in active play</b> — playing the ball, blocking the keeper's view, or challenging an opponent for it.", src:RULES},
+      {cat:"Offside", q:"How do I avoid being offside?", keys:["avoid offside","stay onside","timing my run","beat the offside trap","time your run"], a:"Stay level with the last defender and <b>start your run as the pass is played</b>, not before. Curving your run along the defensive line keeps you onside until the last moment. Try the striker scenario in the Decision Trainer.", src:TRAIN},
+      {cat:"Offside", q:"What is an offside trap?", keys:["offside trap","step up","defensive line step","catch offside"], a:"An <b>offside trap</b> is when the defenders <b>step up together</b> just before a pass is played, leaving an attacker stranded in an offside position. It needs great communication — one defender lagging behind plays everyone onside.", src:TRAIN},
+
+      /* ---------- FOULS & CARDS ---------- */
+      {cat:"Fouls", q:"What is a foul?", keys:["foul","what is a foul","illegal","fouls in soccer","tripping","pushing","holding"], a:"A foul is kicking, tripping, pushing, charging, striking, holding, or jumping at an opponent carelessly, recklessly, or with excessive force — or tackling the player instead of the ball. Fouls give the other team a <b>free kick</b> (or a penalty inside the box).", src:RULES},
+      {cat:"Fouls", q:"What is a yellow card?", keys:["yellow card","yellow","caution","booked","booking"], a:"A <b>yellow card</b> is a caution for things like a reckless foul, dissent, delaying the restart, not giving 10 yards on a free kick, diving, or unsporting behavior. <b>Two yellows = a red</b>.", src:RULES},
+      {cat:"Fouls", q:"What is a red card?", keys:["red card","red","sent off","ejected","sending off","straight red"], a:"A <b>red card</b> means you're sent off and your team plays a player short for the rest of the game. Causes: serious foul play, violent conduct, spitting, denying an obvious goal-scoring chance, abusive language, or a second yellow.", src:RULES},
+      {cat:"Fouls", q:"What is the advantage rule?", keys:["advantage","play on","advantage rule","why didnt the ref stop play"], a:"If stopping play for a foul would actually <b>hurt the team that was fouled</b>, the referee can wave <b>\"play on\"</b> (advantage). They can still show a card for that foul at the next stoppage.", src:RULES},
+      {cat:"Fouls", q:"Is a slide tackle legal?", keys:["slide tackle","sliding tackle","slide","tackle from behind","is tackling legal"], a:"A slide tackle is legal if you <b>play the ball</b> without endangering the opponent. Studs-up, two-footed, or from-behind lunges are fouls and often cards. Many rec, youth, and walking-soccer leagues <b>ban slide tackles</b> entirely.", src:FAIR},
+      {cat:"Fouls", q:"What is diving?", keys:["dive","diving","flop","flopping","fake a foul","simulation"], a:"<b>Diving</b> (simulation) is faking a foul or exaggerating contact to fool the referee. It's a <b>yellow card</b> under the Laws of the Game — and a quick way to lose respect.", src:FAIR},
+
+      /* ---------- HANDBALL ---------- */
+      {cat:"Handball", q:"What counts as handball?", keys:["handball","hand ball","hands","touched it with his hand","arm","hand"], a:"It's <b>handball</b> if you deliberately touch the ball with your hand or arm, or if your arm makes your body <b>unnaturally bigger</b> and the ball hits it. The \"arm\" starts at the <b>bottom of the armpit</b> — the shoulder is allowed.", src:RULES},
+      {cat:"Handball", q:"Is it handball if the ball hits my arm by accident?", keys:["accidental handball","by accident","hit my arm","not deliberate","arm by my side"], a:"Usually <b>not</b>, if your arm is close to your body or supporting you as you fall. But an attacker can never score directly off their hand or arm, even accidentally.", src:RULES},
+
+      /* ---------- RESTARTS ---------- */
+      {cat:"Restarts", q:"How do you take a throw-in?", keys:["throw in","throw-in","how to throw","throw in rules","foul throw","bad throw"], a:"Face the field, hold the ball with <b>both hands</b>, and deliver it from <b>behind and over your head</b>, with part of each foot on the touchline or the ground outside it. Break any of those and it's a <b>foul throw</b> — the other team gets it.", src:RULES},
+      {cat:"Restarts", q:"Can you score from a throw-in?", keys:["score from a throw","goal from throw in","throw it in the goal"], a:"No — you can't score directly from a throw-in. If it goes straight into the opponents' goal, it's a goal kick for them.", src:RULES},
+      {cat:"Restarts", q:"What is a goal kick?", keys:["goal kick","goalkick","when is a goal kick"], a:"When the attacking team last touches the ball before it crosses the goal line (not in the goal), the defending team gets a <b>goal kick</b> from anywhere in their goal area. The ball is in play as soon as it's kicked and clearly moves.", src:RULES},
+      {cat:"Restarts", q:"What is a corner kick?", keys:["corner","corner kick","when is a corner","corner flag"], a:"When the <b>defending team</b> last touches the ball before it crosses their own goal line, the attackers get a <b>corner kick</b> from the corner arc. You <b>can</b> score directly from a corner (an \"olimpico\").", src:RULES},
+      {cat:"Restarts", q:"What's the difference between a direct and indirect free kick?", keys:["direct free kick","indirect free kick","direct vs indirect","indirect","direct","ref raises arm"], a:"From a <b>direct</b> free kick you can score straight into the goal. From an <b>indirect</b> free kick, another player must touch the ball first — the referee signals it by raising an arm overhead. Most fouls are direct; offside and dangerous play are indirect.", src:RULES},
+      {cat:"Restarts", q:"How far back does the wall stand?", keys:["wall","how far","10 yards","ten yards","9.15","distance on free kick","defensive wall"], a:"Opponents must be at least <b>10 yards (9.15 m)</b> from the ball on a free kick. With a wall of three or more defenders, attackers must stay at least <b>1 yard</b> from the wall.", src:RULES},
+      {cat:"Restarts", q:"How does a kick-off work?", keys:["kick off","kickoff","kick-off","start the game","after a goal"], a:"A <b>kick-off</b> starts each half and restarts play after a goal, from the center spot. The ball can go in any direction, everyone must be in their own half, and you <b>can</b> score directly from it.", src:RULES},
+
+      /* ---------- PENALTIES ---------- */
+      {cat:"Penalties", q:"When is a penalty kick given?", keys:["penalty","penalty kick","pk","when is a penalty","foul in the box","spot kick"], a:"A <b>penalty kick</b> is given when a defender commits a direct-free-kick foul (including handball) <b>inside their own penalty area</b>. It's taken from the spot <b>12 yards</b> out, one-on-one against the keeper.", src:RULES},
+      {cat:"Penalties", q:"What are the rules on a penalty kick?", keys:["penalty rules","keeper on the line","encroachment","penalty retake","rebound penalty"], a:"Everyone except the kicker and keeper stays outside the box and arc. The keeper must have part of one foot on or in line with the goal line at the kick. The kicker can't touch the ball again until someone else does.", src:RULES},
+      {cat:"Penalties", q:"How do I take a good penalty?", keys:["take a penalty","penalty tips","how to score a penalty","penalty technique","where to aim penalty"], a:"<b>Pick your spot before the run-up and stick to it.</b> A firm shot low into a corner is very hard to save even if the keeper guesses right. Changing your mind mid-run is the most common cause of a miss.", src:TRAIN},
+
+      /* ---------- GOALKEEPER ---------- */
+      {cat:"Goalkeeper", q:"Where can the goalkeeper use their hands?", keys:["goalkeeper hands","where can the keeper","keeper outside the box","keeper handle"], a:"The goalkeeper may handle the ball <b>only inside their own penalty area</b>. Outside it, they're just another field player.", src:RULES},
+      {cat:"Goalkeeper", q:"What is the back-pass rule?", keys:["back pass","backpass","pass back to keeper","keeper pick up","can the keeper pick it up"], a:"The keeper <b>can't pick up</b> a ball deliberately kicked to them by a teammate, or thrown directly to them from a teammate's throw-in. Doing so gives the other team an <b>indirect free kick</b>. Heading or chesting it back is fine.", src:RULES},
+      {cat:"Goalkeeper", q:"How long can the keeper hold the ball?", keys:["how long can the keeper hold","holding the ball","six seconds","8 seconds","eight seconds","keeper time wasting"], a:"Once the keeper has the ball in their hands, they have <b>8 seconds</b> to release it. Holding it longer gives the other team a <b>corner kick</b>.", src:RULES},
+      {cat:"Goalkeeper", q:"How do I play goalkeeper?", keys:["play goalkeeper","goalkeeping tips","how to be a keeper","keeper positioning","goalie tips"], a:"Stay on your toes in the <b>ready stance</b>, position yourself on the line between the ball and the center of the goal, and come off your line to narrow the angle on breakaways. Talk constantly — you can see the whole field. Catch what you can; punch or parry what you can't.", src:null},
+
+      /* ---------- POSITIONS & TACTICS ---------- */
+      {cat:"Positions", q:"What are the positions in soccer?", keys:["positions","what positions","defender midfielder forward","roles","what position should i play"], a:"<b>Goalkeeper</b>; <b>defenders</b> (center backs and fullbacks); <b>midfielders</b> (defensive, central, attacking, and wingers); and <b>forwards</b> (strikers). Formations like 4-4-2 or 4-3-3 list the number of defenders, midfielders, and forwards.", src:TERMS},
+      {cat:"Positions", q:"What does 4-4-2 or 4-3-3 mean?", keys:["formation","4-4-2","4-3-3","442","433","3-5-2","formations"], a:"A <b>formation</b> lists players from the back: 4-4-2 means <b>4 defenders, 4 midfielders, 2 forwards</b> (the keeper isn't counted). 4-3-3 swaps a midfielder for a third forward — usually two wingers and a striker.", src:null},
+      {cat:"Positions", q:"What does a fullback do?", keys:["fullback","full back","wing back","outside back","right back","left back"], a:"<b>Fullbacks</b> are the wide defenders. They mark opposing wingers, and in the modern game they also <b>overlap</b> to join attacks and deliver crosses — then race back to defend.", src:TERMS},
+      {cat:"Positions", q:"What does a striker do?", keys:["striker","forward","center forward","number 9","nine"], a:"A <b>striker</b> is the main goal-scorer: they stay high, make runs behind the defense, hold the ball up for teammates, and finish chances. Timing runs to stay onside is a striker's key skill.", src:TRAIN},
+      {cat:"Positions", q:"What is a winger?", keys:["winger","wing","wide player","outside midfielder"], a:"A <b>winger</b> plays wide near the touchline, beating fullbacks on the dribble and delivering crosses — or cutting inside to shoot. Wingers stretch the defense to create space in the middle.", src:TERMS},
+      {cat:"Positions", q:"What is a sweeper or libero?", keys:["sweeper","libero"], a:"A <b>sweeper</b> is a defender who plays behind the other defenders to \"sweep up\" balls that get through. It's rare in modern formations, where keepers often play a \"sweeper-keeper\" role instead.", src:null},
+      {cat:"Tactics", q:"What is pressing?", keys:["press","pressing","high press","gegenpress","counter press"], a:"<b>Pressing</b> means closing down the opponent with the ball quickly — as a team — to win it back high up the field. Watch for triggers like a bad touch or a pass toward the sideline.", src:TRAIN},
+      {cat:"Tactics", q:"What is a counterattack?", keys:["counter","counterattack","counter attack","fast break","break"], a:"A <b>counterattack</b> is attacking fast right after winning the ball, before the other team can get back into shape. Run at the retreating defenders, draw one in, and release the free player.", src:TRAIN},
+      {cat:"Tactics", q:"What does switching the play mean?", keys:["switch","switch the play","switching play","change the point of attack","long diagonal"], a:"<b>Switching the play</b> is moving the ball quickly from one side of the field to the other — often with a long diagonal pass — to attack where the defense is thin.", src:TRAIN},
+      {cat:"Tactics", q:"How do I defend 1-v-1?", keys:["defend","defending","one v one defending","1v1 defending","how to defend","stop an attacker","jockey"], a:"<b>Jockey</b>: stay on your feet, side-on, knees bent, about an arm's length away. Stay <b>goal-side</b>, steer the attacker toward the sideline, and wait for a heavy touch before you poke the ball away. Don't dive in.", src:DRILLS},
+      {cat:"Tactics", q:"How do I mark on a corner?", keys:["marking","mark","corner defending","defend a corner","man marking","zonal marking"], a:"Stay <b>goal-side</b> and close enough to touch your player, so you can see both them and the ball. Attack the ball when it comes in — head it <b>high, wide, and away</b>. Zonal marking instead assigns each defender an area.", src:TRAIN},
+      {cat:"Tactics", q:"What is a 2-v-1 and how do I use it?", keys:["2v1","2 v 1","two v one","overload","two on one"], a:"A <b>2-v-1</b> is two attackers against one defender. Dribble at the defender to <b>make them commit</b>, then pass to your free teammate. Pass too early and the defender recovers; too late and you're tackled.", src:DRILLS},
+
+      /* ---------- SKILLS ---------- */
+      {cat:"Skills", q:"How do I pass better?", keys:["pass","passing","how to pass","inside of the foot","short pass","accurate pass"], a:"Use the <b>inside of your foot</b>, plant your standing foot beside the ball pointed at your target, <b>lock your ankle</b>, and follow through toward the target. Pass to your teammate's <b>far foot</b> or into their path.", src:DRILLS},
+      {cat:"Skills", q:"How do I improve my first touch?", keys:["first touch","receiving","control the ball","trap","trapping","receive a pass"], a:"<b>Cushion</b> the ball by letting your foot give as it arrives, and take your touch <b>away from pressure</b> and toward where you want to go next. Check your shoulder before the ball arrives. Wall ball is the best solo practice.", src:DRILLS},
+      {cat:"Skills", q:"How do I dribble better?", keys:["dribble","dribbling","ball control","close control","how to dribble"], a:"Keep the ball <b>close with many small touches</b>, using both feet and all surfaces (inside, outside, sole). Get your eyes up between touches. Cone slalom and 1-v-1 drills are perfect.", src:DRILLS},
+      {cat:"Skills", q:"How do I shoot with power?", keys:["shoot","shooting","power shot","shoot harder","how to shoot","laces","instep"], a:"Strike with your <b>laces (instep)</b>, toe pointed down, ankle locked. Plant your standing foot beside the ball, keep your body <b>over the ball</b> so it stays low, and land on your kicking foot. Accuracy beats power — aim low to the corners.", src:DRILLS},
+      {cat:"Skills", q:"Where should I aim my shot?", keys:["where to aim","aim","corner of the goal","low shot","far post","placement"], a:"<b>Low and to the corners</b> — especially across the keeper toward the <b>far post</b>. Low shots are the hardest to reach, and far-post shots that are saved often fall to a teammate.", src:TRAIN},
+      {cat:"Skills", q:"How do I head the ball?", keys:["header","heading","head the ball","how to head"], a:"Use your <b>forehead</b> (hairline), keep your eyes open and neck firm, and attack the ball rather than letting it hit you. Note: U.S. Soccer bans heading for players <b>10 and under</b> and limits it for ages 11–13, and many older-adult leagues limit it too.", src:null},
+      {cat:"Skills", q:"How do I cross the ball?", keys:["cross","crossing","how to cross","whip in a cross","delivery"], a:"Look up first, then strike across the ball with the inside of your instep to <b>curl it away from the keeper</b> into the space between the keeper and defenders. Aim for areas (near post, penalty spot, far post) rather than a specific player.", src:DRILLS},
+      {cat:"Skills", q:"How do I chip the goalkeeper?", keys:["chip","lob","chip the keeper","scoop"], a:"When the keeper rushes out and is close, <b>get your toe under the ball</b> with a short, stabbing motion and little follow-through so it pops up and over them.", src:TRAIN},
+      {cat:"Skills", q:"How do I juggle a soccer ball?", keys:["juggle","juggling","keepy uppy","keep ups"], a:"Start by dropping the ball onto your laces and catching it; then let it bounce once between kicks; then try two touches in a row. Keep your ankle locked and toe slightly up, and kick softly — the ball should rise only to waist height.", src:null},
+      {cat:"Skills", q:"What is a give-and-go?", keys:["give and go","give-and-go","one two","one-two","wall pass"], a:"A <b>give-and-go</b> (one-two, wall pass) is passing to a teammate, sprinting past your defender, and getting the ball right back in stride. Two quick passes beat one defender.", src:DRILLS},
+      {cat:"Skills", q:"What is a through ball?", keys:["through ball","through pass","pass behind the defense","killer pass"], a:"A <b>through ball</b> is a pass played into the space <b>behind the defense</b> for a teammate to run onto. Pass to the space, not the player, and time it so they're onside.", src:TRAIN},
+
+      /* ---------- EQUIPMENT ---------- */
+      {cat:"Equipment", q:"What size soccer ball should I use?", keys:["ball size","what size ball","size 5","size 4","size 3","which ball"], a:"<b>Size 5</b> for ages 12 and up (adults), <b>size 4</b> for roughly ages 8–12, and <b>size 3</b> for under 8. Futsal uses a smaller, heavier low-bounce ball.", src:WHY},
+      {cat:"Equipment", q:"What shoes do I need?", keys:["shoes","cleats","boots","turf shoes","indoor shoes","what to wear on my feet"], a:"<b>Cleats</b> (boots) for grass, flat <b>turf shoes</b> for artificial turf, and <b>indoor shoes</b> for gym floors and futsal. Wearing cleats on hard turf or wood is a quick way to turn an ankle.", src:WHY},
+      {cat:"Equipment", q:"Do I need shin guards?", keys:["shin guards","shinguards","shin pads","required equipment"], a:"Yes — <b>shin guards are required</b> in organized play and a smart idea in pickup. Wear long socks over them. Jewelry isn't allowed in matches.", src:RULES},
+      {cat:"Equipment", q:"What should I bring to a game?", keys:["what to bring","bring to practice","what do i need","gear","equipment"], a:"Cleats or turf shoes, shin guards and long socks, a light and a dark shirt (pickup teams often split by color), a water bottle, and a ball.", src:WHY},
+
+      /* ---------- GETTING STARTED / OLDER PLAYERS ---------- */
+      {cat:"Getting Started", q:"How do I get started playing soccer as an adult?", keys:["get started","adult","beginner","new to soccer","start playing","learn soccer","join a team","where to play"], a:"Look for an <b>adult rec league</b> through your parks department or local adult soccer association (many have over-30, over-40, and over-50 divisions), drop in on <b>pickup games</b>, or try <b>futsal</b> or <b>walking soccer</b>.", src:WHY},
+      {cat:"Getting Started", q:"What is walking soccer?", keys:["walking soccer","walking football","seniors","older players","over 60","over 70","senior soccer"], a:"<b>Walking soccer</b> is a slower version for older or returning players: <b>no running</b> (one foot on the ground at all times), no slide tackles, and usually no ball above head height. It's growing fast at senior centers and YMCAs.", src:WHY},
+      {cat:"Getting Started", q:"What is futsal?", keys:["futsal","indoor soccer","five a side","5 a side","5v5"], a:"<b>Futsal</b> is indoor 5-a-side soccer on a hard court with a smaller, heavier, low-bounce ball. All those touches make it great for close control, and it's played year-round.", src:TERMS},
+      {cat:"Getting Started", q:"How do I avoid injuries?", keys:["injury","injuries","avoid injury","hurt","hamstring","groin","warm up","stretching"], a:"<b>Warm up</b> for 5–10 minutes (light jog, side-shuffles, leg swings, easy passes), stay hydrated, and play within your limits. Skip slide tackles and diving headers, and take a rest day when muscles are sore.", src:WHY},
+      {cat:"Getting Started", q:"How fit do I need to be?", keys:["fitness","fit","conditioning","stamina","running","cardio","in shape"], a:"Soccer is <b>interval exercise</b> — walking, jogging, and short sprints. Players in a full match cover miles. Small-sided and walking soccer let you play at any fitness level, and playing regularly is the best conditioning.", src:WHY},
+
+      /* ---------- KIDS / SIDELINE ---------- */
+      {cat:"Kids", q:"How can I help my grandkids with soccer?", keys:["grandkids","grandchildren","kids","children","youth","my child","help my kid","parent"], a:"Kick the ball around with them for fun, praise <b>effort over results</b>, and let the coach do the coaching. On the sideline, cheer for both teams' good plays and never yell at the ref. After the game: <b>\"I love watching you play.\"</b>", src:FAIR},
+      {cat:"Kids", q:"What should I say from the sideline?", keys:["sideline","cheering","what to yell","shout from sideline","parents yelling","sideline behavior"], a:"Encouragement only — <b>\"Great effort!\"</b>, \"Nice pass!\". Skip instructions like \"Shoot!\" or \"Pass!\" — kids can't listen to the coach and the sideline at once. And never shout at the referee.", src:FAIR},
+      {cat:"Kids", q:"What age can kids start soccer?", keys:["what age","age to start","toddler soccer","youngest age","how old"], a:"Many programs start at <b>age 3–4</b> with playful, small-sided sessions. Real games are usually 4v4 by age 6–8, growing to 7v7, 9v9, and finally 11v11 around age 13.", src:null},
+      {cat:"Kids", q:"Can kids head the ball?", keys:["kids heading","heading ban","heading age","concussion"], a:"In U.S. Soccer youth programs, <b>heading is banned for 10 and under</b>, and limited in practice for ages 11–13, to reduce concussion risk.", src:null},
+
+      /* ---------- FAIR PLAY ---------- */
+      {cat:"Fair Play", q:"What should I do if a player is injured?", keys:["player injured","injury stoppage","kick it out","give it back","someone is hurt"], a:"If you have the ball and an opponent is down injured, <b>kick it out of play</b> so they can be helped. When play restarts, the other team <b>gives the ball back</b>. It's one of soccer's oldest traditions.", src:FAIR},
+      {cat:"Fair Play", q:"How do I deal with a bad referee call?", keys:["bad call","referee wrong","ref","referee","argue","dissent"], a:"Let it go. Arguing almost never changes a call and earns a <b>yellow card for dissent</b>. If you have a real question, let your captain ask calmly at a stoppage, then focus on the next play.", src:FAIR},
+      {cat:"Fair Play", q:"What are the unwritten rules of pickup soccer?", keys:["pickup","pick up game","pickup etiquette","unwritten rules","no referee"], a:"Call your own fouls, give the ball back after an injury stoppage, <b>take your turn in goal</b>, pass to everyone, no slide tackles, and shake hands after. Ask the locals how teams are picked.", src:FAIR},
+
+      /* ---------- TERMS ---------- */
+      {cat:"Terms", q:"What is a nutmeg?", keys:["nutmeg","megs","through the legs"], a:"A <b>nutmeg</b> is playing the ball through an opponent's legs and collecting it on the other side — the most satisfying move in soccer.", src:TERMS},
+      {cat:"Terms", q:"What is a hat trick?", keys:["hat trick","hattrick","three goals","brace"], a:"A <b>hat trick</b> is three goals by one player in one game. Two goals is a <b>brace</b>.", src:TERMS},
+      {cat:"Terms", q:"What is a clean sheet?", keys:["clean sheet","shutout","no goals conceded"], a:"A <b>clean sheet</b> means a team (and its goalkeeper) didn't concede a goal — a shutout.", src:TERMS},
+      {cat:"Terms", q:"What is stoppage time?", keys:["stoppage time","injury time","added time","extra minutes","why does the clock keep going"], a:"<b>Stoppage time</b> (injury or added time) is the minutes the referee adds at the end of each half to make up for time lost to injuries, substitutions, goal celebrations, and time-wasting.", src:TERMS},
+      {cat:"Terms", q:"What is a set piece?", keys:["set piece","set play","dead ball"], a:"A <b>set piece</b> is a planned play from a restart — corner kicks, free kicks, and sometimes long throw-ins. Teams practice them because so many goals come from them.", src:TERMS},
+      {cat:"Terms", q:"What does 'man on' mean?", keys:["man on","time","shouts","what to shout","communication","talk on the field"], a:"<b>\"Man on!\"</b> warns a teammate that an opponent is right behind them. <b>\"Time!\"</b> means they have space. <b>\"Keeper's!\"</b> means the goalkeeper is coming for it, and <b>\"Away!\"</b> means clear it.", src:FAIR},
+      {cat:"Terms", q:"Why is it called soccer and not football?", keys:["why soccer","why is it called soccer","football or soccer","soccer vs football","name soccer"], a:"\"Soccer\" comes from <b>\"association football\"</b> — English students in the 1880s shortened \"assoc.\" to \"soccer.\" The name stuck in countries with another sport called football (U.S., Canada, Australia), while most of the world says football.", src:WHY},
+
+      /* ---------- DRILLS / PRACTICE ---------- */
+      {cat:"Drills", q:"What drills should I do to improve?", keys:["what drills","drills","practice","get better","improve","what should i practice","training"], a:"Start with <b>wall ball</b> and <b>cone slalom</b> on your own; with a partner, try <b>passing gates</b>, <b>give-and-go</b>, and <b>1-v-1</b>; with a group, play <b>rondos</b> and <b>2-v-1s</b>. The Drills page has 10 with animated diagrams.", src:DRILLS},
+      {cat:"Drills", q:"Can I practice soccer alone?", keys:["practice alone","solo","by myself","no partner","alone"], a:"Absolutely — <b>wall ball</b> for passing and first touch, <b>cone slalom</b> for dribbling, <b>juggling</b> for feel, and shooting at a target or empty goal.", src:DRILLS},
+      {cat:"Drills", q:"What is a rondo?", keys:["rondo","keep away","4v1","4 v 1","monkey in the middle"], a:"A <b>rondo</b> is a keep-away drill: a circle or square of players passing around one or two defenders in the middle. Lose the ball and you go in. It trains passing, angles, and quick decisions.", src:DRILLS}
+    ];
+
+    /* category -> a representative starter question, used in the fallback */
+    const STARTERS = [
+      "What is offside?",
+      "What counts as handball?",
+      "What's the difference between a direct and indirect free kick?",
+      "What are the positions in soccer?",
+      "How do I improve my first touch?",
+      "What is walking soccer?"
+    ];
+
+    /* synonyms folded in before matching so varied wording still hits */
+    const SYNONYMS = {
+      "football":"soccer", "futbol":"soccer", "offsides":"offside",
+      "goalie":"goalkeeper", "keeper":"goalkeeper", "gk":"goalkeeper",
+      "pk":"penalty", "ref":"referee", "refs":"referee", "hand ball":"handball",
+      "throw-in":"throw in", "throwin":"throw in", "freekick":"free kick",
+      "one-two":"one two", "give-and-go":"give and go", "kick-off":"kick off",
+      "boots":"cleats", "shinguards":"shin guards", "shinpads":"shin guards",
+      "vs":"versus", "u":"you", "ur":"your", "1v1":"1 v 1", "2v1":"2 v 1"
+    };
+
+    const STOP = new Set(["the","a","an","is","are","do","does","can","i","you","what","whats","how","to","of","in","on","my","me","it","for","and","or","be","with","when","if","this","that","at","as","about","please","tell","explain","question","should","would","could","will","there","they","them","your","yours","get","got","go"]);
+
+    /* very light stemmer so serve/serving/served all match */
+    function stem(w) {
+      w = w.toLowerCase();
+      if (w.length <= 3) return w;
+      if (w.endsWith("ies") && w.length > 4) return w.slice(0, -3) + "y";
+      for (const suf of ["ing", "ed", "es", "er", "ly", "s"]) {
+        if (w.endsWith(suf) && w.length - suf.length >= 3) { w = w.slice(0, -suf.length); break; }
+      }
+      if (w.length > 4 && w.endsWith("e")) w = w.slice(0, -1);
+      return w;
+    }
+
+    function normalize(text) {
+      let t = " " + text.toLowerCase().replace(/[^a-z0-9\s-]/g, " ").replace(/\s+/g, " ").trim() + " ";
+      for (const [k, v] of Object.entries(SYNONYMS)) {
+        t = t.replace(new RegExp("\\b" + k + "\\b", "g"), v);
+      }
+      return t.trim();
+    }
+
+    function tokens(text) {
+      return normalize(text).split(/\s+/).filter(w => w && !STOP.has(w)).map(stem);
+    }
+
+    /* score every entry, return them sorted best-first */
+    function rank(query) {
+      const qNorm = normalize(query);
+      const qToks = new Set(tokens(query));
+      const scored = [];
+      for (const e of KB) {
+        let s = 0;
+        for (const key of e.keys) {
+          const kNorm = normalize(key);
+          if (kNorm.includes(" ") && qNorm.includes(kNorm)) s += 5;      // verbatim phrase
+          for (const kt of tokens(key)) { if (qToks.has(kt)) s += kt.length > 3 ? 2 : 1; }
+        }
+        for (const qt of tokens(e.q)) { if (qToks.has(qt)) s += 1; }     // canonical-question overlap
+        if (s > 0) scored.push({ e, s });
+      }
+      scored.sort((a, b) => b.s - a.s);
+      return scored;
+    }
+
+    const chat = document.getElementById("chat");
+    const input = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+    function addMsg(html, who, src) {
+      const div = document.createElement("div");
+      div.className = "msg " + who;
+      div.innerHTML = html;
+      if (src) {
+        const s = document.createElement("span");
+        s.className = "src";
+        s.innerHTML = "📎 More: <a href='" + src[1] + "'>" + src[0] + "</a>";
+        div.appendChild(s);
+      }
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function addRelated(questions, label) {
+      if (!questions.length) return;
+      const wrap = document.createElement("div");
+      wrap.className = "related";
+      const lab = document.createElement("span");
+      lab.className = "rlabel";
+      lab.textContent = label || "You might also ask";
+      wrap.appendChild(lab);
+      questions.forEach(q => {
+        const c = document.createElement("div");
+        c.className = "chip";
+        c.textContent = q;
+        c.addEventListener("click", () => send(q));
+        wrap.appendChild(c);
+      });
+      chat.appendChild(wrap);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function showTyping() {
+      const t = document.createElement("div");
+      t.className = "typing";
+      t.id = "typing";
+      t.innerHTML = "Coach is typing<span>.</span><span>.</span><span>.</span>";
+      chat.appendChild(t);
+      chat.scrollTop = chat.scrollHeight;
+    }
+    function clearTyping() {
+      const t = document.getElementById("typing");
+      if (t) t.remove();
+    }
+
+    const FALLBACK = "I'm not sure about that one yet — I answer from a built-in soccer knowledge base covering the rules, offside, fouls and cards, restarts, positions, skills, gear, fair play, and drills. Try rephrasing, or pick one of these to get going:";
+
+    function answer(query) {
+      const ranked = rank(query);
+      showTyping();
+      setTimeout(() => {
+        clearTyping();
+        if (ranked.length && ranked[0].s >= 2) {
+          const best = ranked[0].e;
+          addMsg(best.a, "bot", best.src);
+          const related = ranked.slice(1).filter(x => x.s >= 2).slice(0, 3).map(x => x.e.q);
+          addRelated(related);
+        } else {
+          addMsg(FALLBACK, "bot");
+          addRelated(STARTERS, "Popular questions");
+        }
+      }, 420 + Math.random() * 320);
+    }
+
+    function send(text) {
+      const q = (text || input.value).trim();
+      if (!q) return;
+      addMsg(q.replace(/</g, "&lt;"), "user");
+      input.value = "";
+      answer(q);
+    }
+
+    sendBtn.addEventListener("click", () => send());
+    input.addEventListener("keydown", e => { if (e.key === "Enter") send(); });
+
+    /* starter suggestion chips under the input */
+    const SUGGESTIONS = [
+      "What is offside?",
+      "What gets a yellow card?",
+      "How do you take a throw-in?",
+      "How do I improve my first touch?",
+      "What shoes do I need?",
+      "What is walking soccer?"
+    ];
+    const sugBox = document.getElementById("suggestions");
+    SUGGESTIONS.forEach(s => {
+      const c = document.createElement("div");
+      c.className = "chip";
+      c.textContent = s;
+      c.addEventListener("click", () => send(s));
+      sugBox.appendChild(c);
+    });
+
+    /* greeting */
+    addMsg("👋 Hey! I'm your soccer coach. Ask me anything about the rules, offside, fouls, positions, skills, gear, fair play, or drills — or tap a question below to get started.", "bot");
+  </script>
+</body>
+</html>
