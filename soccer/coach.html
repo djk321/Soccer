@@ -312,6 +312,7 @@
           for (const kt of tokens(key)) { if (qToks.has(kt)) s += kt.length > 3 ? 2 : 1; }
         }
         for (const qt of tokens(e.q)) { if (qToks.has(qt)) s += 1; }     // canonical-question overlap
+        if (normalize(e.q) === qNorm) s += 1000;                         // exact question (e.g. a tapped chip) always wins
         if (s > 0) scored.push({ e, s });
       }
       scored.sort((a, b) => b.s - a.s);
