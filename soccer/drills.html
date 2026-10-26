@@ -56,6 +56,7 @@
   .tag-shooting { background:#1a1a0a; color:#fde68a; border:1px solid #78350f; }
   .tag-touch    { background:#0a1a1a; color:#67e8f9; border:1px solid #155e75; }
   .tag-defending { background:#1a0a0a; color:#fca5a5; border:1px solid #7f1d1d; }
+  .tag-goalkeeping { background:#111f0a; color:#bef264; border:1px solid #3f6212; }
 
   .drill-summary { font-size: 0.84rem; color: #94a3b8; line-height: 1.6; }
   .expand-hint { font-size: 0.68rem; color: #475569; text-align: right; }
@@ -92,6 +93,7 @@
   .filter-btn.active-dribbling { background: #1a0a2e; border-color: #a855f7; color: #d8b4fe; }
   .filter-btn.active-shooting  { background: #1a1a0a; border-color: #f59e0b; color: #fde68a; }
   .filter-btn.active-defending { background: #1a0a0a; border-color: #ef4444; color: #fca5a5; }
+  .filter-btn.active-goalkeeping { background: #111f0a; border-color: #84cc16; color: #bef264; }
 </style>
 </head>
 <body>
@@ -123,6 +125,7 @@
   <button class="filter-btn" data-filter="dribbling">Dribbling</button>
   <button class="filter-btn" data-filter="shooting">Shooting</button>
   <button class="filter-btn" data-filter="defending">Defending</button>
+  <button class="filter-btn" data-filter="goalkeeping">🧤 Goalkeeping</button>
 </div>
 
 <div class="drills-grid" id="drillsGrid">
@@ -643,6 +646,464 @@
   <div class="expand-hint">tap to expand ▾</div>
 </div>
 
+<!-- ══ GOALKEEPING ═════════════════════════════════════════════ -->
+
+<!-- ── DRILL 11 ────────────────────────────────────────────────── -->
+<div class="drill-card" data-drill="11" data-tags="partner goalkeeping">
+  <div class="drill-header">
+    <div class="drill-num">11</div>
+    <div>
+      <div class="drill-title">Ready Stance &amp; Catch</div>
+      <div class="players-badge">👥 Keeper + 1 server · 8 yards apart</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-partner">Partner</span>
+    <span class="tag tag-goalkeeping">Goalkeeping</span>
+  </div>
+  <div class="drill-summary">The foundation of goalkeeping: a balanced ready stance and clean, secure catches at chest, belly, and ground height.</div>
+  <div class="drill-expanded">
+    <div class="court-panel">
+      <canvas class="drill-canvas" data-drill="11" width="460" height="252"></canvas>
+      <div class="court-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div>You (keeper)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#f97316"></div>Server</div>
+      </div>
+    </div>
+    <div class="drill-detail">
+      <div class="detail-section">
+        <div class="detail-label">Setup</div>
+        <div class="detail-text">Keeper in goal; server about 8 yards out with a few balls.</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">How to Run</div>
+        <div class="detail-text"><ol>
+          <li>Keeper sets the <strong>ready stance</strong>: feet shoulder-width, knees bent, weight on the balls of the feet, hands up and out front.</li>
+          <li><strong>Chest-high:</strong> catch in the "W" — thumbs and index fingers almost touching behind the ball.</li>
+          <li><strong>Belly-high:</strong> scoop the ball into the stomach.</li>
+          <li><strong>Ground ball:</strong> drop to one knee (or legs together in a "long barrier") and scoop it up.</li>
+          <li>3 sets of 10, mixing heights.</li>
+        </ol></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Focus Points</div>
+        <div class="detail-text"><ul>
+          <li>Get your body behind every ball — a fumble should drop in front of you.</li>
+          <li>Reset to the ready stance after every catch.</li>
+          <li>Watch the ball all the way into your hands.</li>
+        </ul></div>
+      </div>
+      <button class="collapse-btn">▲ Collapse</button>
+    </div>
+  </div>
+  <div class="expand-hint">tap to expand ▾</div>
+</div>
+
+<!-- ── DRILL 12 ────────────────────────────────────────────────── -->
+<div class="drill-card" data-drill="12" data-tags="partner goalkeeping">
+  <div class="drill-header">
+    <div class="drill-num">12</div>
+    <div>
+      <div class="drill-title">Low Dives</div>
+      <div class="players-badge">👥 Keeper + 1 server · Soft grass</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-partner">Partner</span>
+    <span class="tag tag-goalkeeping">Goalkeeping</span>
+  </div>
+  <div class="drill-summary">Learn to dive safely to each side — starting on your knees and working up to a full standing dive.</div>
+  <div class="drill-expanded">
+    <div class="court-panel">
+      <canvas class="drill-canvas" data-drill="12" width="460" height="252"></canvas>
+      <div class="court-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div>You (keeper)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#f97316"></div>Server</div>
+      </div>
+    </div>
+    <div class="drill-detail">
+      <div class="detail-section">
+        <div class="detail-label">Setup</div>
+        <div class="detail-text">Keeper in the middle of the goal (or a 4-yard cone goal). Server a few yards in front with a ball. Use soft grass or mats.</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">How to Run</div>
+        <div class="detail-text"><ol>
+          <li><strong>Kneeling:</strong> server rolls the ball just out of reach; keeper falls sideways to catch it.</li>
+          <li><strong>Squatting:</strong> same, from a low crouch.</li>
+          <li><strong>Standing:</strong> same, from the ready stance.</li>
+          <li>5 to each side at each stage.</li>
+        </ol></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Focus Points</div>
+        <div class="detail-text"><ul>
+          <li>Land on your hip and shoulder — never your stomach or elbow.</li>
+          <li>Bottom hand behind the ball, top hand on top of it.</li>
+          <li>Step forward and across as you dive, then pull the ball into your chest.</li>
+        </ul></div>
+      </div>
+      <button class="collapse-btn">▲ Collapse</button>
+    </div>
+  </div>
+  <div class="expand-hint">tap to expand ▾</div>
+</div>
+
+<!-- ── DRILL 13 ────────────────────────────────────────────────── -->
+<div class="drill-card" data-drill="13" data-tags="group goalkeeping">
+  <div class="drill-header">
+    <div class="drill-num">13</div>
+    <div>
+      <div class="drill-title">Angle Play</div>
+      <div class="players-badge">👥 Keeper + 2–4 shooters · 5 cones, 18 yards out</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-group">Group</span>
+    <span class="tag tag-goalkeeping">Goalkeeping</span>
+  </div>
+  <div class="drill-summary">Shots come from different spots around the box. Shuffle onto the angle and be set before every shot.</div>
+  <div class="drill-expanded">
+    <div class="court-panel">
+      <canvas class="drill-canvas" data-drill="13" width="460" height="252"></canvas>
+      <div class="court-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div>You (keeper)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#dc2626"></div>Shooter</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#fb923c;border-radius:2px"></div>Cones</div>
+      </div>
+    </div>
+    <div class="drill-detail">
+      <div class="detail-section">
+        <div class="detail-label">Setup</div>
+        <div class="detail-text">Five cones in an arc about 18 yards from goal, from wide left to wide right. Shooters with balls behind the cones.</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">How to Run</div>
+        <div class="detail-text"><ol>
+          <li>Coach calls a cone number.</li>
+          <li>The shooter at that cone takes a touch toward goal.</li>
+          <li>Keeper shuffles to the line between the ball and the center of the goal, sets, and saves the shot.</li>
+          <li>Two rounds through all five cones.</li>
+        </ol></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Focus Points</div>
+        <div class="detail-text"><ul>
+          <li>Small shuffle steps — never cross your feet.</li>
+          <li>Step off your line to cut down the angle.</li>
+          <li>Feet planted as the shooter strikes; a moving keeper can't push off.</li>
+        </ul></div>
+      </div>
+      <button class="collapse-btn">▲ Collapse</button>
+    </div>
+  </div>
+  <div class="expand-hint">tap to expand ▾</div>
+</div>
+
+<!-- ── DRILL 14 ────────────────────────────────────────────────── -->
+<div class="drill-card" data-drill="14" data-tags="partner goalkeeping">
+  <div class="drill-header">
+    <div class="drill-num">14</div>
+    <div>
+      <div class="drill-title">Breakaway 1 v 1</div>
+      <div class="players-badge">👥 Keeper + 1 attacker · 30 yards out</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-partner">Partner</span>
+    <span class="tag tag-goalkeeping">Goalkeeping</span>
+  </div>
+  <div class="drill-summary">An attacker breaks in alone. Close the gap, get set, stay big — and smother the ball if they take a heavy touch.</div>
+  <div class="drill-expanded">
+    <div class="court-panel">
+      <canvas class="drill-canvas" data-drill="14" width="460" height="252"></canvas>
+      <div class="court-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div>You (keeper)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#dc2626"></div>Attacker</div>
+      </div>
+    </div>
+    <div class="drill-detail">
+      <div class="detail-section">
+        <div class="detail-label">Setup</div>
+        <div class="detail-text">Attacker starts with the ball about 30 yards from goal; keeper on the goal line.</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">How to Run</div>
+        <div class="detail-text"><ol>
+          <li>Attacker dribbles straight in.</li>
+          <li>Keeper comes off the line while the attacker's head is down or the ball is away from their foot.</li>
+          <li>Keeper stops and gets set before the attacker can shoot.</li>
+          <li>6 reps, then switch roles.</li>
+        </ol></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Focus Points</div>
+        <div class="detail-text"><ul>
+          <li>Stay big and on your feet as long as possible.</li>
+          <li>Go down only to smother at their feet: hands first, body sideways, face protected.</li>
+          <li><strong>Young keepers:</strong> skip the smother — just make yourself big and block.</li>
+        </ul></div>
+      </div>
+      <button class="collapse-btn">▲ Collapse</button>
+    </div>
+  </div>
+  <div class="expand-hint">tap to expand ▾</div>
+</div>
+
+<!-- ── DRILL 15 ────────────────────────────────────────────────── -->
+<div class="drill-card" data-drill="15" data-tags="group goalkeeping">
+  <div class="drill-header">
+    <div class="drill-num">15</div>
+    <div>
+      <div class="drill-title">Crosses &amp; High Balls</div>
+      <div class="players-badge">👥 Keeper + 1 server + 1–2 attackers · Penalty box</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-group">Group</span>
+    <span class="tag tag-goalkeeping">Goalkeeping</span>
+  </div>
+  <div class="drill-summary">Call it, attack it, catch it at the highest point — then start the counterattack with a quick throw.</div>
+  <div class="drill-expanded">
+    <div class="court-panel">
+      <canvas class="drill-canvas" data-drill="15" width="460" height="252"></canvas>
+      <div class="court-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div>You (keeper)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#f97316"></div>Server</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#dc2626"></div>Attacker</div>
+      </div>
+    </div>
+    <div class="drill-detail">
+      <div class="detail-section">
+        <div class="detail-label">Setup</div>
+        <div class="detail-text">Server out wide near the edge of the box with balls. Add one or two passive attackers once the keeper is comfortable.</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">How to Run</div>
+        <div class="detail-text"><ol>
+          <li>Server throws or crosses the ball into the box.</li>
+          <li>Keeper shouts <strong>"Keeper's!"</strong>, steps toward the ball, and jumps off one foot.</li>
+          <li>Catch at the highest point, arms fully up and in front of your head.</li>
+          <li>If you can't catch it cleanly, punch it high, wide, and far with two fists. 10 from each side.</li>
+        </ol></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Focus Points</div>
+        <div class="detail-text"><ul>
+          <li>Call early and loud — then commit.</li>
+          <li>Drive one knee up as you jump to protect yourself.</li>
+          <li>Finish every catch with a throw to a wide teammate.</li>
+        </ul></div>
+      </div>
+      <button class="collapse-btn">▲ Collapse</button>
+    </div>
+  </div>
+  <div class="expand-hint">tap to expand ▾</div>
+</div>
+
+<!-- ── DRILL 16 ────────────────────────────────────────────────── -->
+<div class="drill-card" data-drill="16" data-tags="partner goalkeeping">
+  <div class="drill-header">
+    <div class="drill-num">16</div>
+    <div>
+      <div class="drill-title">Footwork Ladder into a Save</div>
+      <div class="players-badge">👥 Keeper + 1 server · Agility ladder or 6 cones</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-partner">Partner</span>
+    <span class="tag tag-goalkeeping">Goalkeeping</span>
+  </div>
+  <div class="drill-summary">Quick feet through a ladder, then set and save the instant you come out. Builds the footwork that gets you to the ball.</div>
+  <div class="drill-expanded">
+    <div class="court-panel">
+      <canvas class="drill-canvas" data-drill="16" width="460" height="252"></canvas>
+      <div class="court-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div>You (keeper)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#f97316"></div>Server</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#fb923c;border-radius:2px"></div>Ladder</div>
+      </div>
+    </div>
+    <div class="drill-detail">
+      <div class="detail-section">
+        <div class="detail-label">Setup</div>
+        <div class="detail-text">An agility ladder (or six cones about 2 feet apart) just in front of the goal line. Server 10–12 yards out with balls.</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">How to Run</div>
+        <div class="detail-text"><ol>
+          <li>Keeper moves through the ladder: two feet in each box, then side-shuffle, then crossover steps.</li>
+          <li>Come out of the last box and get set.</li>
+          <li>Server shoots the moment the keeper's feet are planted.</li>
+          <li>6–8 reps, changing the footwork pattern each time.</li>
+        </ol></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Focus Points</div>
+        <div class="detail-text"><ul>
+          <li>Fast, small steps on the balls of your feet.</li>
+          <li>Keep your head still as you come out of the ladder.</li>
+          <li>Hands up and ready before the shot.</li>
+        </ul></div>
+      </div>
+      <button class="collapse-btn">▲ Collapse</button>
+    </div>
+  </div>
+  <div class="expand-hint">tap to expand ▾</div>
+</div>
+
+<!-- ── DRILL 17 ────────────────────────────────────────────────── -->
+<div class="drill-card" data-drill="17" data-tags="group goalkeeping">
+  <div class="drill-header">
+    <div class="drill-num">17</div>
+    <div>
+      <div class="drill-title">Reaction Saves</div>
+      <div class="players-badge">👥 Keeper + 1–2 servers · 6–8 yards</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-group">Group</span>
+    <span class="tag tag-goalkeeping">Goalkeeping</span>
+  </div>
+  <div class="drill-summary">Shots you can't see coming until the last moment — turn-and-save, screened shots, and wall rebounds.</div>
+  <div class="drill-expanded">
+    <div class="court-panel">
+      <canvas class="drill-canvas" data-drill="17" width="460" height="252"></canvas>
+      <div class="court-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div>You (keeper)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#f97316"></div>Server / screen</div>
+      </div>
+    </div>
+    <div class="drill-detail">
+      <div class="detail-section">
+        <div class="detail-label">Setup</div>
+        <div class="detail-text">Keeper in goal; server 6–8 yards out. For screened shots, a teammate stands between the server and keeper.</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">How to Run</div>
+        <div class="detail-text"><ol>
+          <li><strong>Turn-and-save:</strong> keeper faces the net; server shouts "Turn!" and shoots as the keeper spins.</li>
+          <li><strong>Screened shot:</strong> the screen steps aside at the last moment as the server shoots.</li>
+          <li><strong>Rebound wall:</strong> keeper throws the ball against a wall at an angle and catches the rebound.</li>
+          <li>10 of each.</li>
+        </ol></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Focus Points</div>
+        <div class="detail-text"><ul>
+          <li>Hands ready the whole time.</li>
+          <li>React with your hands first, feet second.</li>
+          <li>Don't guess — read the ball.</li>
+        </ul></div>
+      </div>
+      <button class="collapse-btn">▲ Collapse</button>
+    </div>
+  </div>
+  <div class="expand-hint">tap to expand ▾</div>
+</div>
+
+<!-- ── DRILL 18 ────────────────────────────────────────────────── -->
+<div class="drill-card" data-drill="18" data-tags="group goalkeeping">
+  <div class="drill-header">
+    <div class="drill-num">18</div>
+    <div>
+      <div class="drill-title">Double Save</div>
+      <div class="players-badge">👥 Keeper + 2 servers · Opposite angles</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-group">Group</span>
+    <span class="tag tag-goalkeeping">Goalkeeping</span>
+  </div>
+  <div class="drill-summary">Save one shot, bounce back up, and reset for a second shot from the other side — just like a real scramble.</div>
+  <div class="drill-expanded">
+    <div class="court-panel">
+      <canvas class="drill-canvas" data-drill="18" width="460" height="252"></canvas>
+      <div class="court-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div>You (keeper)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#f97316"></div>Servers</div>
+      </div>
+    </div>
+    <div class="drill-detail">
+      <div class="detail-section">
+        <div class="detail-label">Setup</div>
+        <div class="detail-text">Two servers with balls at opposite angles around the edge of the box.</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">How to Run</div>
+        <div class="detail-text"><ol>
+          <li>Server 1 shoots low to one side; keeper dives to save or parries wide.</li>
+          <li>Keeper gets up fast and resets position for Server 2.</li>
+          <li>Server 2 shoots from the other side as soon as the keeper is set.</li>
+          <li>6 rounds.</li>
+        </ol></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Focus Points</div>
+        <div class="detail-text"><ul>
+          <li>Push up off the ground with your top hand and knee.</li>
+          <li>Parry wide, never back into the middle.</li>
+          <li>Get set again before the second shot — don't dive while still moving.</li>
+        </ul></div>
+      </div>
+      <button class="collapse-btn">▲ Collapse</button>
+    </div>
+  </div>
+  <div class="expand-hint">tap to expand ▾</div>
+</div>
+
+<!-- ── DRILL 19 ────────────────────────────────────────────────── -->
+<div class="drill-card" data-drill="19" data-tags="group goalkeeping passing">
+  <div class="drill-header">
+    <div class="drill-num">19</div>
+    <div>
+      <div class="drill-title">Back-Pass &amp; Footwork with the Ball</div>
+      <div class="players-badge">👥 Keeper + 2 teammates + 1 attacker</div>
+    </div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-group">Group</span>
+    <span class="tag tag-goalkeeping">Goalkeeping</span>
+    <span class="tag tag-passing">Passing</span>
+  </div>
+  <div class="drill-summary">Handle a back-pass with your feet under pressure — touch it away from the attacker and find an open teammate.</div>
+  <div class="drill-expanded">
+    <div class="court-panel">
+      <canvas class="drill-canvas" data-drill="19" width="460" height="252"></canvas>
+      <div class="court-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#2563eb"></div>You (keeper)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#f97316"></div>Teammates</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#dc2626"></div>Attacker</div>
+      </div>
+    </div>
+    <div class="drill-detail">
+      <div class="detail-section">
+        <div class="detail-label">Setup</div>
+        <div class="detail-text">One teammate near the edge of the box to pass back, one wide teammate as a target, and one attacker who presses the keeper.</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">How to Run</div>
+        <div class="detail-text"><ol>
+          <li>Teammate passes back to the keeper — remember, <strong>no hands</strong> on a deliberate back-pass.</li>
+          <li>Keeper takes a first touch away from the pressing attacker.</li>
+          <li>Pass to the open teammate, or clear it wide if pressure is close.</li>
+          <li>Alternate: one-touch clearance, two-touch pass, long kick to a wide cone. 10 reps.</li>
+        </ol></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Focus Points</div>
+        <div class="detail-text"><ul>
+          <li>Check your shoulder before the ball arrives.</li>
+          <li>Use both feet.</li>
+          <li>Never dribble across the front of your own goal.</li>
+        </ul></div>
+      </div>
+      <button class="collapse-btn">▲ Collapse</button>
+    </div>
+  </div>
+  <div class="expand-hint">tap to expand ▾</div>
+</div>
+
 </div>
 
 <script>
@@ -728,6 +1189,48 @@ function drawHalfField(ctx) {
   ctx.font = 'bold 9px Segoe UI'; ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(255,255,255,0.5)';
   const bm = c2s(0.5, BOX_D + 0.05); ctx.fillText('PENALTY BOX', bm.x, bm.y + 3);
   const hm = c2s(0.86, 0.96); ctx.fillText('HALFWAY', hm.x, hm.y + 3);
+}
+
+// box field = zoomed penalty area: 44 m wide × 26 m deep, goal at top
+const BX = 44, BY = 26;
+function boxArc(ctx, ccx, ccy, rMetres, keep) {
+  const rx = rMetres / BX, ry = rMetres / BY;
+  ctx.beginPath();
+  let started = false;
+  for (let i = 0; i <= 64; i++) {
+    const a = Math.PI * 2 * i / 64;
+    const px = ccx + rx * Math.cos(a), py = ccy + ry * Math.sin(a);
+    if (keep && !keep(px, py)) { started = false; continue; }
+    const s = c2s(px, py);
+    if (!started) { ctx.moveTo(s.x, s.y); started = true; } else ctx.lineTo(s.x, s.y);
+  }
+  ctx.stroke();
+}
+
+function drawBoxField(ctx) {
+  drawGrass(ctx);
+  const bw = 40.32 / BX, bd = 16.5 / BY, sw = 18.32 / BX, sd = 5.5 / BY, gw = 7.32 / BX, spot = 11 / BY;
+  ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = 1.8;
+  const gl = [c2s(0, 0), c2s(1, 0)];
+  ctx.beginPath(); ctx.moveTo(gl[0].x, gl[0].y); ctx.lineTo(gl[1].x, gl[1].y); ctx.stroke();
+  ctx.lineWidth = 1.5;
+  rectLine(ctx, 0.5 - bw / 2, 0, 0.5 + bw / 2, bd);
+  rectLine(ctx, 0.5 - sw / 2, 0, 0.5 + sw / 2, sd);
+  boxArc(ctx, 0.5, spot, 9.15, (x, y) => y >= bd);
+  ctx.fillStyle = '#fff';
+  const sp = c2s(0.5, spot); ctx.beginPath(); ctx.arc(sp.x, sp.y, 2, 0, Math.PI * 2); ctx.fill();
+
+  // goal with net
+  const L = c2s(0.5 - gw / 2, 0), R = c2s(0.5 + gw / 2, 0), H = 26;
+  ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fillRect(L.x, L.y - H, R.x - L.x, H);
+  ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 0.6;
+  for (let x = L.x + 5; x < R.x; x += 5) { ctx.beginPath(); ctx.moveTo(x, L.y - H); ctx.lineTo(x, L.y); ctx.stroke(); }
+  for (let y = L.y - H + 5; y < L.y; y += 5) { ctx.beginPath(); ctx.moveTo(L.x, y); ctx.lineTo(R.x, y); ctx.stroke(); }
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.6;
+  ctx.beginPath(); ctx.moveTo(L.x, L.y); ctx.lineTo(L.x, L.y - H); ctx.lineTo(R.x, R.y - H); ctx.lineTo(R.x, R.y); ctx.stroke();
+
+  ctx.font = 'bold 9px Segoe UI'; ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  const bm = c2s(0.5, bd + 0.05); ctx.fillText('EDGE OF THE BOX', bm.x, bm.y + 3);
 }
 
 function drawGridField(ctx, drill) {
@@ -950,6 +1453,123 @@ const DRILLS = {
       { from:[0.62,0.69], to:[0.88,0.74], dur:420, pause:800, label:'POKE IT AWAY!', move:{ you:[0.62,0.71] } },
     ]
   },
+
+  // ── GOALKEEPING (field 'box' = zoomed penalty area, goal at top) ──
+  11: {
+    field: 'box',
+    players: { you:[0.5,0.06], s:[0.5,0.44] },
+    colors:  { you:C.you, s:C.tm },
+    labels:  { you:'YOU', s:'SRV' },
+    resetPlayers: false,
+    sequence: [
+      { from:[0.5,0.41],  to:[0.5,0.08],  arcH:20, dur:650, pause:350, label:'CHEST — "W" CATCH' },
+      { from:[0.5,0.08],  to:[0.5,0.41],  arcH:16, dur:600, pause:150 },
+      { from:[0.5,0.41],  to:[0.5,0.08],  arcH:10, dur:600, pause:350, label:'BELLY — SCOOP IT IN' },
+      { from:[0.5,0.08],  to:[0.5,0.41],  arcH:16, dur:600, pause:150 },
+      { from:[0.5,0.41],  to:[0.5,0.08],  arcH:0,  dur:650, pause:350, label:'GROUND — LONG BARRIER' },
+      { from:[0.5,0.08],  to:[0.5,0.41],  arcH:16, dur:600, pause:500 },
+    ]
+  },
+  12: {
+    field: 'box',
+    players: { you:[0.5,0.06], s:[0.5,0.36] },
+    colors:  { you:C.you, s:C.tm },
+    labels:  { you:'YOU', s:'SRV' },
+    resetPlayers: false,
+    sequence: [
+      { from:[0.5,0.33],  to:[0.4,0.07],  dur:650, pause:350, label:'DIVE LEFT — LAND ON YOUR SIDE', move:{ you:[0.41,0.07] } },
+      { from:[0.4,0.07],  to:[0.5,0.33],  arcH:14, dur:650, pause:150, label:'GET UP, RESET', move:{ you:[0.5,0.06] } },
+      { from:[0.5,0.33],  to:[0.6,0.07],  dur:650, pause:350, label:'DIVE RIGHT', move:{ you:[0.59,0.07] } },
+      { from:[0.6,0.07],  to:[0.5,0.33],  arcH:14, dur:650, pause:500, label:'GET UP, RESET', move:{ you:[0.5,0.06] } },
+    ]
+  },
+  13: {
+    field: 'box', cones: [[0.18,0.58],[0.32,0.66],[0.5,0.69],[0.68,0.66],[0.82,0.58]],
+    players: { you:[0.5,0.06], s:[0.18,0.62] },
+    colors:  { you:C.you, s:C.opp },
+    labels:  { you:'YOU', s:'SHT' },
+    resetPlayers: true,
+    sequence: [
+      { from:[0.19,0.6],  to:[0.25,0.5],  dur:650, pause:120, label:'SHUFFLE ONTO THE ANGLE', move:{ s:[0.24,0.52], you:[0.45,0.09] } },
+      { from:[0.25,0.5],  to:[0.45,0.11], arcH:3, dur:430, pause:400, label:'SET — SAVE!' },
+      { from:[0.45,0.11], to:[0.81,0.6],  arcH:24, dur:800, pause:120, label:'NEXT CONE', move:{ s:[0.82,0.62], you:[0.5,0.07] } },
+      { from:[0.81,0.6],  to:[0.75,0.5],  dur:650, pause:120, label:'SHUFFLE ONTO THE ANGLE', move:{ s:[0.76,0.52], you:[0.55,0.09] } },
+      { from:[0.75,0.5],  to:[0.55,0.11], arcH:3, dur:430, pause:700, label:'SET — SAVE!' },
+    ]
+  },
+  14: {
+    field: 'box',
+    players: { you:[0.5,0.05], a:[0.5,0.96] },
+    colors:  { you:C.you, a:C.opp },
+    labels:  { you:'YOU', a:'ATT' },
+    resetPlayers: true,
+    sequence: [
+      { from:[0.5,0.93],  to:[0.5,0.55],  dur:1000, pause:60, label:'CLOSE THE GAP', move:{ a:[0.5,0.58], you:[0.5,0.2] } },
+      { from:[0.5,0.55],  to:[0.5,0.43],  dur:500,  pause:250, label:'STOP — GET SET, STAY BIG', move:{ a:[0.5,0.46], you:[0.5,0.26] } },
+      { from:[0.5,0.43],  to:[0.5,0.33],  dur:350,  pause:900, label:'HEAVY TOUCH — SMOTHER IT!', move:{ you:[0.5,0.32] } },
+    ]
+  },
+  15: {
+    field: 'box',
+    players: { you:[0.5,0.06], s:[0.97,0.3], a:[0.4,0.32] },
+    colors:  { you:C.you, s:C.tm, a:C.opp },
+    labels:  { you:'YOU', s:'SRV', a:'ATT' },
+    resetPlayers: true,
+    sequence: [
+      { from:[0.95,0.3],  to:[0.53,0.14], arcH:55, dur:950, pause:350, label:'"KEEPER\'S!" — CATCH HIGH', move:{ you:[0.53,0.13], a:[0.47,0.18] } },
+      { from:[0.53,0.14], to:[0.95,0.92], arcH:30, dur:800, pause:700, label:'THROW IT WIDE' },
+    ]
+  },
+  16: {
+    field: 'box', cones: [[0.32,0.15],[0.38,0.15],[0.44,0.15],[0.5,0.15],[0.56,0.15],[0.62,0.15]],
+    players: { you:[0.28,0.18], s:[0.5,0.52] },
+    colors:  { you:C.you, s:C.tm },
+    labels:  { you:'YOU', s:'SRV' },
+    resetPlayers: true,
+    sequence: [
+      { from:[0.5,0.49],  to:[0.5,0.49],  dur:550, pause:0,   label:'QUICK FEET', move:{ you:[0.41,0.18] } },
+      { from:[0.5,0.49],  to:[0.5,0.49],  dur:550, pause:0,   move:{ you:[0.54,0.18] } },
+      { from:[0.5,0.49],  to:[0.5,0.49],  dur:400, pause:150, label:'OUT — SET!', move:{ you:[0.5,0.07] } },
+      { from:[0.5,0.49],  to:[0.57,0.08], dur:420, pause:800, label:'SAVE', move:{ you:[0.56,0.07] } },
+    ]
+  },
+  17: {
+    field: 'box',
+    players: { you:[0.5,0.06], t:[0.5,0.22], s:[0.5,0.42] },
+    colors:  { you:C.you, t:C.tm, s:C.tm },
+    labels:  { you:'YOU', t:'SCR', s:'SRV' },
+    resetPlayers: true,
+    sequence: [
+      { from:[0.5,0.39],  to:[0.44,0.08], dur:330, pause:400, label:'SCREEN MOVES — REACT!', move:{ t:[0.66,0.24], you:[0.45,0.07] } },
+      { from:[0.44,0.08], to:[0.5,0.39],  arcH:14, dur:650, pause:150, label:'RESET', move:{ t:[0.5,0.22], you:[0.5,0.06] } },
+      { from:[0.5,0.39],  to:[0.57,0.08], dur:330, pause:800, label:'REACT!', move:{ t:[0.34,0.24], you:[0.56,0.07] } },
+    ]
+  },
+  18: {
+    field: 'box',
+    players: { you:[0.5,0.06], s1:[0.24,0.48], s2:[0.76,0.48] },
+    colors:  { you:C.you, s1:C.tm, s2:C.tm },
+    labels:  { you:'YOU', s1:'SRV', s2:'SRV' },
+    resetPlayers: true,
+    sequence: [
+      { from:[0.25,0.46], to:[0.43,0.07], dur:480, pause:80,  label:'SAVE 1 — PARRY WIDE', move:{ you:[0.44,0.07] } },
+      { from:[0.43,0.07], to:[0.14,0.02], arcH:6, dur:420, pause:100 },
+      { from:[0.75,0.46], to:[0.75,0.46], dur:450, pause:60,  label:'UP FAST — RESET', move:{ you:[0.52,0.08] } },
+      { from:[0.75,0.46], to:[0.57,0.08], dur:460, pause:800, label:'SAVE 2!', move:{ you:[0.56,0.07] } },
+    ]
+  },
+  19: {
+    field: 'box',
+    players: { you:[0.5,0.06], d:[0.2,0.56], a:[0.64,0.42], t:[0.05,0.86] },
+    colors:  { you:C.you, d:C.tm, a:C.opp, t:C.tm },
+    labels:  { you:'YOU', d:'TM', a:'ATT', t:'TM' },
+    resetPlayers: true,
+    sequence: [
+      { from:[0.21,0.54], to:[0.47,0.09], dur:750, pause:100, label:'BACK-PASS — NO HANDS!', move:{ a:[0.56,0.2] } },
+      { from:[0.47,0.09], to:[0.36,0.12], dur:420, pause:100, label:'TOUCH AWAY FROM PRESSURE', move:{ you:[0.37,0.11], a:[0.48,0.13] } },
+      { from:[0.36,0.12], to:[0.06,0.84], arcH:8, dur:850, pause:800, label:'PASS TO THE OPEN MAN' },
+    ]
+  },
 };
 
 // ─── ANIMATION ENGINE ─────────────────────────────────────────
@@ -960,7 +1580,9 @@ function stopAnim() {
 }
 
 function drawScene(ctx, drill, players, ball, label) {
-  if (drill.field === 'half') drawHalfField(ctx); else drawGridField(ctx, drill);
+  if (drill.field === 'half') drawHalfField(ctx);
+  else if (drill.field === 'box') drawBoxField(ctx);
+  else drawGridField(ctx, drill);
   (drill.cones || []).forEach(([x, y]) => drawCone(ctx, x, y));
   Object.keys(players).sort((a, b) => players[a][1] - players[b][1]).forEach(k => {
     drawDot(ctx, players[k][0], players[k][1], drill.colors[k], drill.labels[k]);
